@@ -8,11 +8,10 @@ import java.util.LinkedList;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/pk/")
 
 public class BotInfoController {
 
-    @RequestMapping("getBotInfo/")
+    @RequestMapping("/pk/getBotInfo/")
     public Map getBotInfo() {
 //        LinkedList<String> Link;
 //        Link = new LinkedList<>();
