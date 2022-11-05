@@ -1,4 +1,8 @@
+// 全局变量
+
+
 import { createStore } from 'vuex'
+import ModuleUser from './User'
 
 export default createStore({
   state: {
@@ -10,5 +14,6 @@ export default createStore({
   actions: {
   },
   modules: {
+    user: ModuleUser,
   }
 })

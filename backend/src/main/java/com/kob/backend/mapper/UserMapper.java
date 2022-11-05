@@ -1,6 +1,6 @@
 package com.kob.backend.mapper;
 
-//将class文件转化为sql语句
+//mapper层（也叫Dao层）：将pojo层的class中的操作，映射成sql语句
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.kob.backend.pojo.User;
