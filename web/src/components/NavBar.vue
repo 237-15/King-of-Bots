@@ -20,25 +20,25 @@
                         {{ $store.state.user.username }}
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <li>
-                    <router-link class="dropdown-item" :to="{name: 'user_bot_index'}">我的Bot</router-link>
+                        <li>
+                            <router-link class="dropdown-item" :to="{name: 'user_bot_index'}">我的Bot</router-link>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#" @click="logout">退出</a></li>
+                    </ul>
                 </li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="#" @click="logout">退出</a></li>
-            </ul>
-            </li>
             </ul>
             <ul class="navbar-nav" v-else>
-            <li class="nav-item">
-                <router-link class="nav-link" :to="{name: 'user_account_login' }" role="button">
-                登录
-                </router-link>
-            </li>
-            <li class="nav-item">
-                <router-link class="nav-link" :to="{name: 'user_account_register'}" role="button">
-                注册
-                </router-link>
-            </li>
+                <li class="nav-item">
+                    <router-link class="nav-link" :to="{name: 'user_account_login' }" role="button">
+                    登录
+                    </router-link>
+                </li>
+                <li class="nav-item">
+                    <router-link class="nav-link" :to="{name: 'user_account_register'}" role="button">
+                    注册
+                    </router-link>
+                </li>
             </ul>
         </div>
         </div>

@@ -1,5 +1,5 @@
 package com.kob.backend.config;
-
+//jwt的设置：关于开放网页链接,不能让用户进入所有的网页，用户必须拥有授权才能进入，比如登录后才能查看个人信息，经过他人的授权才能查看他的空间
 import com.kob.backend.config.filter.JwtAuthenticationTokenFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

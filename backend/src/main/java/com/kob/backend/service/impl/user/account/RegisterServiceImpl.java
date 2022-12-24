@@ -24,11 +24,13 @@ public class RegisterServiceImpl implements RegisterService {
     @Override
     public Map<String, String> register(String username, String password, String confirmedPassword) {
         Map<String, String> map = new HashMap<>();
-        if (username == null) {
+
+        if (username == "") {
             map.put("error_message", "用户名不能为空");
             return map;
         }
-        if (password == null || confirmedPassword == null) {
+
+        if (password == "" || confirmedPassword == "") {
             map.put("error_message", "密码不能为空");
             return map;
         }

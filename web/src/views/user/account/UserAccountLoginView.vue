@@ -4,6 +4,9 @@
             <div class="col-3">
                 <form @submit.prevent="login">
                     <div class="mb-3">
+                        登录
+                    </div>
+                    <div class="mb-3">
                         <label for="username" class="form-label">用户名</label>
                         <input v-model="username" type="text" class="form-control" id="username" placeholder="请输入用户名">
                     </div>
@@ -44,7 +47,6 @@ export default {
                     store.dispatch("getinfo", {
                         success() {
                             router.push({ name: 'home' });
-                            console.log(store.state.user);
                         }
                     })
                 },
@@ -70,5 +72,9 @@ button {
 }
 div.error-message {
     color: red;
+}
+
+.login {
+    margin: auto;
 }
 </style>

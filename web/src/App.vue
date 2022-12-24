@@ -46,12 +46,12 @@ export default {
   //       console.log(resp);
   //     }
   //   })
-
+  // setup() {
   //   $.ajax({
   //     url: "http://127.0.0.1:3000/user/account/register/",
   //     type: "post",
   //     data: {
-  //       username: "lhy2",
+  //       username: "lhy->lqh2",
   //       password: "123456",
   //       confirmedPassword: "123456"
   //     },
@@ -63,6 +63,7 @@ export default {
   //     }
   //   })
   // }
+  
 }
 </script>
 
