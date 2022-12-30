@@ -86,7 +86,7 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach((to, from, next) => {                     //通过router进入摸个页面之前执行此函数，自带的API
+router.beforeEach((to, from, next) => {                     //通过router进入某个页面之前执行此函数，自带的API
   if (to.meta.requestAuth && !store.state.user.is_login) {  //to表示跳转到哪个页面，from表示从哪个页面跳转过来
     next({name: "user_account_login"});                     //我们实现此功能：如果此页面需要登录后才能使用，则查看是否已登录
   } else {                                                  //若未登录，则跳转到登录界面

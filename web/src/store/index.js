@@ -1,6 +1,7 @@
 // 全局变量
 import { createStore } from 'vuex'
 import ModuleUser from './User'
+import ModulePk from './pk'
 
 export default createStore({
   state: {  //全局参数
@@ -13,5 +14,6 @@ export default createStore({
   },
   modules: {  //为了给全局变量分组，所以需要提前声明其他store文件，然后引入这里
     user: ModuleUser,
+    pk: ModulePk,
   }
 })
