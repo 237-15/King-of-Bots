@@ -157,6 +157,7 @@ export default {
         VAceEditor,
     },
     setup() {
+        localStorage.setItem("current_webPage_name", "user_bot_index");
         ace.config.set(  //编辑器
             "basePath", 
             "https://cdn.jsdelivr.net/npm/ace-builds@" + require('ace-builds').version + "/src-noconflict/")

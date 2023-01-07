@@ -43,32 +43,34 @@
         </div>
         </div>
     </nav>
-    </template>
+</template>
     
-    <script>
-    import { useRoute } from 'vue-router'
-    import { computed } from 'vue'
-    import { useStore } from 'vuex';
+<script>
+import { useRoute } from 'vue-router'
+import { computed } from 'vue'
+import { useStore } from 'vuex';
     
-    export default {
-        setup() {
-            const store = useStore();
-            const route = useRoute();
-            let route_name = computed(() => route.name)
-    
-            const logout = () => {
-                store.dispatch("logout");
-            }
-    
-            return {
-                route_name,
-                logout
-            }
+export default {
+    setup() {
+        const store = useStore();
+        const route = useRoute();
+        let route_name = computed(() => route.name)
+
+        const logout = () => {
+            store.dispatch("logout");
+            store.state.user.button = true;
+            localStorage.setItem("current_webPage_name", "user_account_login");
+        }
+
+        return {
+            route_name,
+            logout
         }
     }
-    </script>
-    
-    <style scoped>
-    
-    </style>
+}
+</script>
+
+<style scoped>
+
+</style>
     

@@ -1,5 +1,5 @@
 <template>
-    <div class = "BACK">
+    <div class = "BACK" v-if="!$store.state.user.pulling_info">
         <div class="row justify-content-md-center box">
             <div class="col-10">
                 <form @submit.prevent="login">
@@ -30,10 +30,34 @@ import router from '../../../router/index'
 export default {
     setup() {
         const store = useStore();
+        const current_webPage_name = localStorage.getItem("current_webPage_name");
         let username = ref('');
         let password = ref('');
         let error_message = ref('');
 
+        if(current_webPage_name == "user_account_login") {
+            store.commit("updatePullingInfo", false);  //展示登录页面
+        } else {
+            const jwt_token = localStorage.getItem("jwt_token");  //获取浏览器保存的token，如果不存在则返回空
+            if(jwt_token) {  //如果token存在要验证其合法性,即有没有过期或者能不能被解析出来
+                store.commit("updateToken", jwt_token);  //更新全局变量token
+                store.dispatch("getinfo", {  //验证token的合法性，即检验token能不能被解析
+                    success() {
+                        if(!store.state.user.button){  
+                            router.push({ name: current_webPage_name });  //跳转到上次打开的页面
+                        } else {  //如果是点击退出登录，则不用跳回原来的页面
+                            store.commit("updatePullingInfo", false);  //展示登录页面
+                        }
+                    },
+                    error() {
+                        store.commit("updatePullingInfo", false);  //展示登录页面
+                    }
+                })
+            } else {  //如果token不存在，也就是浏览器里的token过期了，或者压根没有token
+                store.commit("updatePullingInfo", false);  //展示登录页面
+            }
+        }
+    
         const login = () => {
             error_message.value = "";
             store.dispatch("login", {    //想调用actions里面的函数就要用 dispatch
@@ -43,6 +67,7 @@ export default {
                     store.dispatch("getinfo", {
                         success() {
                             router.push({ name: 'home' });
+                            store.state.user.is_login = true;
                         }
                     })
                 },

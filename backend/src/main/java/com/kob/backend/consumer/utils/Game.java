@@ -1,21 +1,58 @@
 package com.kob.backend.consumer.utils;
 
+import com.alibaba.fastjson2.JSONObject;
+import com.kob.backend.consumer.WebSocketServer;
+import com.kob.backend.pojo.Record;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Random;
+import java.util.concurrent.locks.ReentrantLock;
 
-public class Game {
-    final private Integer rows;  //长: 13
-    final private Integer cols;  //宽: 13
-    final private Integer wall_count;  //障碍物数量（墙的数量）
-    final private static int[] dx = {-1, 0, 1, 0}, dy = {0, 1, 0, -1};  //判断地图的连通性
-    final private int[][] map;  //地图
 
-    private Random random = new Random();  //随机数
+public class Game extends Thread{  //继承Thread类，就可以变成多线程的了
+    private final Integer rows;  //长: 13
+    private final Integer cols;  //宽: 14
+    private final Integer wall_count;  //障碍物数量（墙的数量）
+    private final static int[] dx = {-1, 0, 1, 0}, dy = {0, 1, 0, -1};  //判断地图的连通性
+    private final int[][] map;  //地图
+    private final Player playerA, playerB;  //玩家A和B
+    private Integer nextStepA = null, nextStepB = null;  //玩家A和B的下一步操作;0,1,2,3=>上下左右;为空表示没有下一步操作
+    private final ReentrantLock lock = new ReentrantLock();  //多线程的锁
+    private String status = "playing";  //游戏状态   playing -> finishing
+    private String loser = null; //输者  all->平局 A->A输 B->B输
+    public Player getPlayerA() {
+        return playerA;
+    }
+    public Player getPlayerB() {
+        return playerB;
+    }
+    public void SetNextStepA(Integer nextStepA) {
+        lock.lock();  //上锁
+        try {  //尝试读写数据
+            this.nextStepA = nextStepA;
+        } finally {  //不管读写数据会不会报错，都要解锁，不然会死锁
+            lock.unlock();
+        }
 
-    public Game(Integer rows, Integer cols, Integer wall_count) {
+    }
+    public void SetNextStepB(Integer nextStepB) {
+        lock.lock();  //上锁
+        try {  //尝试读写数据
+            this.nextStepB = nextStepB;
+        } finally {  //不管读写数据会不会报错，都要解锁，不然会死锁
+            lock.unlock();
+        }
+    }
+
+    public Game(Integer rows, Integer cols, Integer wall_count, Integer idA, Integer idB) {
         this.rows = rows;
         this.cols = cols;
         this.wall_count = wall_count;
         this.map = new int[rows][cols];
+        playerA = new Player(idA, rows - 2, 1, new ArrayList<>());
+        playerB = new Player(idB, 1, cols - 2, new ArrayList<>());
     }
 
     public int[][] getMap() {  //获取地图
@@ -54,13 +91,16 @@ public class Game {
             map[0][i] = map[this.rows - 1][i] = 1;
         }
 
+        Random random = new Random();  //随机数
+
         for(int i = 0; i < this.wall_count / 2; i++){  //创建随机障碍物
             for(int j = 0; j < 1000; j++){
                 int r = random.nextInt(this.rows);  //random.nextInt()产生0~1的随机数
                 int c = random.nextInt(this.cols);
                 if(map[r][c] == 1 || map[this.rows - 1 - r][this.cols - 1 - c] == 1) continue;  //保证不在重复的位置产生墙
                 if(r == this.rows - 2 && c == 1 || r == 1 && c == this.cols - 2) continue;  //保证左下和右上两个格子是没有墙的
-                map[r][c] = map[this.rows - 1 - r][this.cols - 1 - r] = 1;
+                map[r][c] = 1;
+                map[this.rows - 1 - r][this.cols - 1 - c] = 1;
                 break;
             }
         }
@@ -71,6 +111,161 @@ public class Game {
     public void creatMap() {  //创建地图
         for(int i = 0; i < 1000; i++){  //尝试1000次，一定可以满足连通的条件
             if(draw()) break;
+        }
+    }
+
+    private String getMapString() {
+        StringBuilder res = new StringBuilder();
+        for (int i = 0; i < rows; i ++ ) {
+            for (int j = 0; j < cols; j ++ ) {
+                res.append(map[i][j]);
+            }
+        }
+        return res.toString();
+
+    }
+    private void saveToRecord() {  //存入对局记录到数据库里
+        Record record = new Record(
+                null,
+                playerA.getId(),
+                playerA.getSx(),
+                playerA.getSy(),
+                playerB.getId(),
+                playerB.getSx(),
+                playerB.getSy(),
+                playerA.getStepsString(),
+                playerB.getStepsString(),
+                getMapString(),
+                loser,
+                new Date()
+        );
+        WebSocketServer.recordMapper.insert(record);
+    }
+    private boolean nextStep() {  //两名玩家的下一步操作
+        try {
+            Thread.sleep(200);  //防止有玩家在短时间内多次输入，前端会渲染不出来,200毫秒是因为前端设定设的速度是每秒走5格,走一格要200毫秒
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        for(int i = 0; i < 50; i++){  //5秒后，若有玩家未输入则游戏结束
+            if(i == 0) {  //前端的动画要2秒
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            try {
+                Thread.sleep(100);  //睡100毫秒
+                lock.lock();
+                try {
+                    if(nextStepA != null && nextStepB != null) {
+                        getPlayerA().getSteps().add(nextStepA);
+                        getPlayerB().getSteps().add(nextStepB);
+                        return true;
+                    }
+                } finally {
+                    lock.unlock();
+                }
+            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);  //报异常
+                e.printStackTrace();  //直接输出
+            }
+        }
+        return false;
+    }
+
+    private void SendAllMessage(String message) {  //向两名玩家发送信息（移动/游戏结果）
+        WebSocketServer.users.get(playerA.getId()).sendMessage(message);
+        WebSocketServer.users.get(playerB.getId()).sendMessage(message);
+    }
+    private void SendMove() {  //向两名玩家发送移动的信息
+        lock.lock();
+        try {
+            JSONObject resp = new JSONObject();
+            resp.put("event", "move");
+            resp.put("A_direction", nextStepA);
+            resp.put("B_direction", nextStepB);
+            SendAllMessage(resp.toJSONString());
+            nextStepA = nextStepB = null;  //清空操作信息
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private void SendResult() {  //向两名玩家公布游戏结果
+        JSONObject resp = new JSONObject();
+        resp.put("event", "result");
+        resp.put("loser", loser);
+        saveToRecord();
+        SendAllMessage(resp.toJSONString());
+    }
+
+    private boolean check_valid(List<Cell> cellsA, List<Cell> cellsB) {
+        int n = cellsA.size();
+        Cell cell = cellsA.get(n - 1);
+        if (map[cell.x][cell.y] == 1) return false;
+
+        for (int i = 0; i < n - 1; i ++ ) {
+            if (cellsA.get(i).x == cell.x && cellsA.get(i).y == cell.y)
+                return false;
+        }
+
+        for (int i = 0; i < n - 1; i ++ ) {
+            if (cellsB.get(i).x == cell.x && cellsB.get(i).y == cell.y)
+                return false;
+        }
+
+        return true;
+    }
+
+    private void judge() {  //判断两名玩家的操作是否合法
+        List<Cell> cellsA = playerA.getCells();
+        List<Cell> cellsB = playerB.getCells();
+
+        boolean validA = check_valid(cellsA, cellsB);
+        boolean validB = check_valid(cellsB, cellsA);
+        if (!validA || !validB) {
+            status = "finished";
+
+            if (!validA && !validB) {
+                loser = "all";
+            } else if (!validA) {
+                loser = "A";
+            } else {
+                loser = "B";
+            }
+        }
+    }
+    @Override
+    public void run() {  //alt + insert键，重写方法  run()  入口函数
+        for(int i = 0; i < 1000; i++) {  //在1000个回合内游戏肯定会结束
+            if(nextStep()) {  //获取到了两名玩家的下一步操作
+                judge();
+                if(status.equals("playing")) {
+                    SendMove();
+                } else {
+                    SendResult();
+                    break;
+                }
+            } else {
+                status = "finished";
+                lock.lock();
+                try {
+                    if(nextStepA == null && nextStepB == null) {
+                        loser = "all";
+                    } else if(nextStepA == null) {
+                        loser = "A";
+                    } else {
+                        loser = "B";
+                    }
+                } finally {
+                    lock.unlock();
+                }
+                SendResult();
+                break;
+            }
         }
     }
 }

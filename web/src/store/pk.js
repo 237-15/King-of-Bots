@@ -5,6 +5,15 @@ export default {
         opponent_username: "",  //对手用户名
         opponent_photo: "",  //对手头像
         gameMap: "null",  //游戏地图
+        idA: 0,
+        sxA: 0,
+        syA: 0,
+        idB: 0,
+        sxB: 0,
+        syB: 0,
+        gameObject: null,
+        loser: "none",  //none, all, A, B  输者
+        time: "",  //计时器，stop, start,停止、开始计时
     },
     getters: {
     },
@@ -22,9 +31,24 @@ export default {
             state.status = status
         },
 
-        updateGameMap(state, gameMap) {
-            state.gameMap = gameMap
+        updateGame(state, game) {
+            state.gameMap = game.map
+            state.idA = game.idA
+            state.sxA = game.sxA
+            state.syA = game.syA
+            state.idB = game.idB
+            state.sxB = game.sxB
+            state.syB = game.syB
         },
+        updateGameObject(state, gameObject) {
+            state.gameObject = gameObject
+        },
+        updateLoser(state, loser) {
+            state.loser = loser
+        },
+        updateTime(state, time) {
+            state.time = time
+        }
     },
     actions: {  //辅助函数
 

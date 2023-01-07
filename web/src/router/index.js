@@ -26,17 +26,17 @@ const routes = [
     }
   },
   {
-    path: "/record/",
-    name: "record_index",
-    component: RecordIndexView,
+    path: "/ranklist/",
+    name: "ranklist_index",
+    component: RanklistIndexView,
     meta: {
       requestAuth: true,
     }
   },
   {
-    path: "/ranklist/",
-    name: "ranklist_index",
-    component: RanklistIndexView,
+    path: "/record/",
+    name: "record_index",
+    component: RecordIndexView,
     meta: {
       requestAuth: true,
     }

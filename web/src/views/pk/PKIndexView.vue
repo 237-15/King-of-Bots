@@ -1,11 +1,13 @@
 <template>
     <PlatGround v-if="$store.state.pk.status === 'playing'" />
     <MatchingGround v-if="$store.state.pk.status === 'matching'" />
+    <ResultBoard v-if="$store.state.pk.loser != 'none'" />
 </template>
 
 <script>
 import PlatGround from '../../components/PlayGround.vue'
 import MatchingGround from '../../components/MatchingGround.vue'
+import ResultBoard from '../../components/ResultBoard.vue'
 import { onMounted, onUnmounted } from 'vue';
 import { useStore } from 'vuex';
 
@@ -13,6 +15,7 @@ export default {
     components: {
         PlatGround,
         MatchingGround,
+        ResultBoard,
     },
 
     setup() {
@@ -20,6 +23,8 @@ export default {
         const socketUrl = `ws://127.0.0.1:3000/websocket/${store.state.user.token}/`
 
         let socket = null
+
+        localStorage.setItem("current_webPage_name", "home");
 
         onMounted(() => {  //挂载的意思，就是当打开pk页面是执行此函数
             store.commit("updateOpponent", {
@@ -37,16 +42,32 @@ export default {
             socket.onmessage = msg => {  //主要逻辑
                 const data = JSON.parse(msg.data)  //后端传过来的
 
-                store.commit("updateOpponent", {
-                    opponent_username: data.opponent_username,
-                    opponent_photo: data.opponent_photo,
-                })
-
-                setTimeout(() => {  //相当于Sleep函数
-                    store.commit("updateStatus", data.status)
-                }, 2000)
-
-                store.commit("updateGameMap", data.gameMap)
+                if (data.status === "playing") {
+                    store.commit("updateTime", "stop")
+                    store.commit("updateOpponent", {
+                        opponent_username: data.opponent_username,
+                        opponent_photo: data.opponent_photo,
+                    })
+                    setTimeout(() => {  //相当于Sleep函数
+                        store.commit("updateStatus", data.status)
+                    }, 2000)
+                    store.commit("updateGame", data.game)
+                } else if(data.event === "move") {
+                    const game = store.state.pk.gameObject;
+                    const [snake0, snake1] = game.snakes;
+                    snake0.set_direction(data.A_direction);
+                    snake1.set_direction(data.B_direction);
+                } else if(data.event === "result") {
+                    const game = store.state.pk.gameObject;
+                    const [snake0, snake1] = game.snakes;
+                    if(data.loser === "all" || data.loser === "A") {
+                        snake0.status = "die";
+                    }
+                    if(data.loser === "all" || data.loser === "B") {
+                        snake1.status = "die";
+                    }
+                    store.commit("updateLoser", data.loser)
+                }
             }
 
             socket.onclose = () => {  //关闭时

@@ -8,10 +8,11 @@ export default {
         token: "",
         is_login: false,
         pulling_info: true,  // 是否正在从云端拉取信息
+        button: false
     },
     getters: {
     },
-    mutations: {  //数据更新
+    mutations: {  //数据更新  store.commit()
         updateUser(state, user) {
             state.id = user.id;
             state.username = user.username;
@@ -27,9 +28,13 @@ export default {
             state.photo = "";
             state.token = "";
             state.is_login = false;
+        },
+        updatePullingInfo(state, pulling_info) {
+            state.pulling_info = pulling_info;
         }
+
     },
-    actions: {  //辅助函数
+    actions: {  //辅助函数  store.dispatch()
         login(context, data) {
             $.ajax({
                 url: "http://127.0.0.1:3000/user/account/login/",
@@ -41,6 +46,7 @@ export default {
                 success(resp) {
                     if (resp.error_message === "success") {
                         context.commit("updateToken", resp.token);  //在actions里用mutations里面的函数要用context.commit("函数名", 参数)
+                        localStorage.setItem("jwt_token", resp.token);  //在localStorage里面存下token，以便我们刷新页面时可以读取里面的token从而避免再次登录
                         data.success(resp);
                     } else {
                         data.error(resp);
@@ -62,7 +68,7 @@ export default {
                     if (resp.error_message === "success") {
                         context.commit("updateUser", {
                             ...resp,
-                            is_login: true,
+                            is_login: true
                         });
                         data.success(resp);
                     } else {
