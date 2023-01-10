@@ -71,7 +71,7 @@ public class RegisterServiceImpl implements RegisterService {
 
         String encodePassword = passwordEncoder.encode((password));
         String photo = "chrome-search://local-ntp/edge_background.jpg?ts=1663067779";
-        User user = new User(null, username, encodePassword, photo);
+        User user = new User(null, username, encodePassword, photo, 1500);
         userMapper.insert(user);
 
         map.put("error_message", "success");

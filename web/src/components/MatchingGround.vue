@@ -3,10 +3,10 @@
         <div class="row justify-content-md-center">
             <div class="col-5">
                 <div class="user-photo">
-                    <img :src="$store.state.user.photo" alt="" />
+                    <img :src="store.state.user.photo" alt="" />
                 </div>
                 <div class="user-username">
-                    {{ $store.state.user.username }}
+                    {{ store.state.user.username }}
                 </div>
             </div>
             <div class="col-2 time" >
@@ -15,10 +15,10 @@
             </div>
             <div class="col-5">
                 <div class="user-photo">
-                    <img :src="$store.state.pk.opponent_photo" alt="" />
+                    <img :src="store.state.pk.opponent_photo" alt="" />
                 </div>
                 <div class="user-username">
-                    {{ $store.state.pk.opponent_username }}
+                    {{ store.state.pk.opponent_username }}
                 </div>
             </div>
             <button @click="click_btn" class="btn btn-primary">{{ btn_info }}</button>

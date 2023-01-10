@@ -12,21 +12,24 @@ import java.util.concurrent.locks.ReentrantLock;
 
 
 public class Game extends Thread{  //继承Thread类，就可以变成多线程的了
-    private final Integer rows;  //长: 13
-    private final Integer cols;  //宽: 14
+    private final Integer rows;  //长: 13  (|)
+    private final Integer cols;  //宽: 14  (——)
     private final Integer wall_count;  //障碍物数量（墙的数量）
-    private final static int[] dx = {-1, 0, 1, 0}, dy = {0, 1, 0, -1};  //判断地图的连通性
-    private final int[][] map;  //地图
-    private final Player playerA, playerB;  //玩家A和B
+    private final static int[] dx = {-1, 0, 1, 0}, dy = {0, 1, 0, -1};  //判断地图的连通性所用
+    private final int[][] map;  //地图(一个二维数组)
+    private final GamePlayer gamePlayerA, gamePlayerB;  //玩家A和B
     private Integer nextStepA = null, nextStepB = null;  //玩家A和B的下一步操作;0,1,2,3=>上下左右;为空表示没有下一步操作
     private final ReentrantLock lock = new ReentrantLock();  //多线程的锁
     private String status = "playing";  //游戏状态   playing -> finishing
     private String loser = null; //输者  all->平局 A->A输 B->B输
-    public Player getPlayerA() {
-        return playerA;
+    public int[][] getMap() {  //获取地图
+        return map;
     }
-    public Player getPlayerB() {
-        return playerB;
+    public GamePlayer getPlayerA() {
+        return gamePlayerA;
+    }
+    public GamePlayer getPlayerB() {
+        return gamePlayerB;
     }
     public void SetNextStepA(Integer nextStepA) {
         lock.lock();  //上锁
@@ -46,17 +49,13 @@ public class Game extends Thread{  //继承Thread类，就可以变成多线程�
         }
     }
 
-    public Game(Integer rows, Integer cols, Integer wall_count, Integer idA, Integer idB) {
+    public Game(Integer rows, Integer cols, Integer wall_count, Integer idA, Integer idB) {  //构造函数
         this.rows = rows;
         this.cols = cols;
         this.wall_count = wall_count;
         this.map = new int[rows][cols];
-        playerA = new Player(idA, rows - 2, 1, new ArrayList<>());
-        playerB = new Player(idB, 1, cols - 2, new ArrayList<>());
-    }
-
-    public int[][] getMap() {  //获取地图
-        return map;
+        gamePlayerA = new GamePlayer(idA, rows - 2, 1, new ArrayList<>());
+        gamePlayerB = new GamePlayer(idB, 1, cols - 2, new ArrayList<>());
     }
 
     private boolean check( int sx, int sy, int tx, int ty) {  //判断地图的连通性（可以从地图的左下角走到右上角）
@@ -114,27 +113,26 @@ public class Game extends Thread{  //继承Thread类，就可以变成多线程�
         }
     }
 
-    private String getMapString() {
-        StringBuilder res = new StringBuilder();
+    private String getMapString() {  //将二维数组的地图转换为字符串，以便存入数据库(后面用来看回放)
+        StringBuilder res = new StringBuilder();  //和String差不多
         for (int i = 0; i < rows; i ++ ) {
             for (int j = 0; j < cols; j ++ ) {
                 res.append(map[i][j]);
             }
         }
         return res.toString();
-
     }
     private void saveToRecord() {  //存入对局记录到数据库里
         Record record = new Record(
                 null,
-                playerA.getId(),
-                playerA.getSx(),
-                playerA.getSy(),
-                playerB.getId(),
-                playerB.getSx(),
-                playerB.getSy(),
-                playerA.getStepsString(),
-                playerB.getStepsString(),
+                gamePlayerA.getId(),
+                gamePlayerA.getSx(),
+                gamePlayerA.getSy(),
+                gamePlayerB.getId(),
+                gamePlayerB.getSx(),
+                gamePlayerB.getSy(),
+                gamePlayerA.getStepsString(),
+                gamePlayerB.getStepsString(),
                 getMapString(),
                 loser,
                 new Date()
@@ -177,8 +175,10 @@ public class Game extends Thread{  //继承Thread类，就可以变成多线程�
     }
 
     private void SendAllMessage(String message) {  //向两名玩家发送信息（移动/游戏结果）
-        WebSocketServer.users.get(playerA.getId()).sendMessage(message);
-        WebSocketServer.users.get(playerB.getId()).sendMessage(message);
+        if(WebSocketServer.users.get(gamePlayerA.getId()) != null)
+            WebSocketServer.users.get(gamePlayerA.getId()).sendMessage(message);
+        if(WebSocketServer.users.get(gamePlayerB.getId()) != null)
+            WebSocketServer.users.get(gamePlayerB.getId()).sendMessage(message);
     }
     private void SendMove() {  //向两名玩家发送移动的信息
         lock.lock();
@@ -206,29 +206,25 @@ public class Game extends Thread{  //继承Thread类，就可以变成多线程�
         int n = cellsA.size();
         Cell cell = cellsA.get(n - 1);
         if (map[cell.x][cell.y] == 1) return false;
-
         for (int i = 0; i < n - 1; i ++ ) {
             if (cellsA.get(i).x == cell.x && cellsA.get(i).y == cell.y)
                 return false;
         }
-
         for (int i = 0; i < n - 1; i ++ ) {
             if (cellsB.get(i).x == cell.x && cellsB.get(i).y == cell.y)
                 return false;
         }
-
         return true;
     }
 
     private void judge() {  //判断两名玩家的操作是否合法
-        List<Cell> cellsA = playerA.getCells();
-        List<Cell> cellsB = playerB.getCells();
+        List<Cell> cellsA = gamePlayerA.getCells();
+        List<Cell> cellsB = gamePlayerB.getCells();
 
         boolean validA = check_valid(cellsA, cellsB);
         boolean validB = check_valid(cellsB, cellsA);
         if (!validA || !validB) {
             status = "finished";
-
             if (!validA && !validB) {
                 loser = "all";
             } else if (!validA) {

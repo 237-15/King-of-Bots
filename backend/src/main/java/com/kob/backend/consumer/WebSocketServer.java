@@ -3,6 +3,7 @@ package com.kob.backend.consumer;
 import com.alibaba.fastjson2.JSONObject;
 import com.kob.backend.consumer.utils.Game;
 import com.kob.backend.consumer.utils.JwtAuthentication;
+import com.kob.backend.consumer.utils.MatchTool;
 import com.kob.backend.mapper.RecordMapper;
 import com.kob.backend.mapper.UserMapper;
 import com.kob.backend.pojo.User;
@@ -13,9 +14,7 @@ import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 @Component
 @ServerEndpoint("/websocket/{token}")  // 注意不要以'/'结尾
@@ -23,13 +22,10 @@ public class WebSocketServer {
 
     // 线程安全的HashMap和Set
     public final static ConcurrentHashMap<Integer, WebSocketServer> users = new ConcurrentHashMap<>();  //全局变量，对所有的实例化对象都可见，存储所有的链接
-    private final static CopyOnWriteArraySet<User> matchTool= new CopyOnWriteArraySet<>();  //匹配池
     private User user;  //储存用户信息，一旦匹配成功，将展示对手的头像和昵称
-
     private Game game = null;  //游戏
     private Session session = null;  //每个链接用session来维护
-
-    private static UserMapper userMapper;
+    public static UserMapper userMapper;
     public static RecordMapper recordMapper;
     @Autowired                                               //因为WebSocketServer
     public void setUserMapper(UserMapper userMapper) {       //不是单列模式
@@ -42,7 +38,7 @@ public class WebSocketServer {
     @OnOpen
     public void onOpen(Session session, @PathParam("token") String token) throws IOException {
         this.session = session;
-        Integer userId = JwtAuthentication.getUserId(token);
+        Integer userId = JwtAuthentication.getUserId(token);  //JwtAuthentication是自己定义的一个工具类，用来解析token
         this.user = userMapper.selectById(userId);
 
         if(userId != -1) {
@@ -58,60 +54,57 @@ public class WebSocketServer {
         System.out.println("disconnect!");
         if(this.user != null) {
             users.remove(this.user.getId());
-            matchTool.remove(this.user);
+            MatchTool.removePlayer(this.user.getId());  //一定要从匹配池里移除，防止因为有玩家因为直接关闭网页或者断网了，但仍然在匹配池里
         }
     }
 
-    private void startMatching() {
-        System.out.println("start matching!");
-        matchTool.add(this.user);
-
-        while(matchTool.size() >= 2) {
-            Iterator<User> it = matchTool.iterator();  //迭代器
-            User userA = it.next();
-            User userB = it.next();
-
-            matchTool.remove(userA);  //从匹配池里移除
-            matchTool.remove(userB);
-
-            Game game = new Game(13, 14, 20, userA.getId(), userB.getId());  //创建地图
-            game.creatMap();  //创建游戏地图
+    public static void startGame(User userA, User userB) {
+        Game game = new Game(13, 14, 20, userA.getId(), userB.getId());  //创建游戏
+        game.creatMap();  //创建游戏地图
+        if(users.get(userA.getId()) != null)
             users.get(userA.getId()).game = game;
+        if(users.get(userB.getId()) != null)
             users.get(userB.getId()).game = game;
 
-            game.start();  //多线程的开始    game里继承于Thread类的一个apl
+        game.start();  //多线程的开始    game里继承于Thread类的一个apl
 
-            JSONObject respGame = new JSONObject();  //地图信息
-            respGame.put("idA", game.getPlayerA().getId());
-            respGame.put("sxA", game.getPlayerA().getSx());
-            respGame.put("syA", game.getPlayerA().getSy());
-            respGame.put("idB", game.getPlayerB().getId());
-            respGame.put("sxB", game.getPlayerB().getSx());
-            respGame.put("syB", game.getPlayerB().getSy());
-            respGame.put("map", game.getMap());
+        JSONObject Game = new JSONObject();  //地图信息
+        Game.put("idA", game.getPlayerA().getId());
+        Game.put("sxA", game.getPlayerA().getSx());
+        Game.put("syA", game.getPlayerA().getSy());
+        Game.put("idB", game.getPlayerB().getId());
+        Game.put("sxB", game.getPlayerB().getSx());
+        Game.put("syB", game.getPlayerB().getSy());
+        Game.put("map", game.getMap());
 
-            JSONObject respA = new JSONObject();
-            respA.put("status", "playing");
-            respA.put("opponent_username", userB.getUsername());
-            respA.put("opponent_photo", userB.getPhoto());
-            respA.put("game", respGame);
-            users.get(userA.getId()).sendMessage(respA.toJSONString());
+        JSONObject respA = new JSONObject();  //匹配成功后展示对手的头像与昵称
+        respA.put("status", "playing");
+        respA.put("opponent_username", userB.getUsername());
+        respA.put("opponent_photo", userB.getPhoto());
+        respA.put("game", Game);
+        if(users.get(userA.getId()) != null)
+            users.get(userA.getId()).sendMessage(respA.toJSONString());  //发送信息给前端
 
-            JSONObject respB = new JSONObject();
-            respB.put("status", "playing");
-            respB.put("opponent_username", userA.getUsername());
-            respB.put("opponent_photo", userA.getPhoto());
-            respB.put("game", respGame);
-            users.get(userB.getId()).sendMessage(respB.toJSONString());
-        }
+        JSONObject respB = new JSONObject();  //匹配成功后展示对手的头像与昵称
+        respB.put("status", "playing");
+        respB.put("opponent_username", userA.getUsername());
+        respB.put("opponent_photo", userA.getPhoto());
+        respB.put("game", Game);
+        if(users.get(userB.getId()) != null)
+            users.get(userB.getId()).sendMessage(respB.toJSONString());  //发送信息给前端
+    }
+    private void startMatching() {
+        System.out.println("start matching!");
+        MatchTool.addPlayer(user.getId(), user.getRating());
     }
 
     private void stopMatching() {
         System.out.println("stop matching!");
-        matchTool.remove(this.user);
+        MatchTool.removePlayer(user.getId());
     }
+
     private void move(int direction) {  //云端的蛇移动
-        if(game.getPlayerA().getId().equals(user.getId())) {
+        if(game.getPlayerA().getId().equals(user.getId())) {  //判断是A玩家还是B玩家发送的消息
             game.SetNextStepA(direction);
         } else if(game.getPlayerB().getId().equals(user.getId())){
             game.SetNextStepB(direction);
@@ -142,7 +135,7 @@ public class WebSocketServer {
             try {
                 this.session.getBasicRemote().sendText(message);
             } catch (IOException e) {
-                e.printStackTrace();
+                e.printStackTrace();  //将错误信息打印出来
             }
         }
     }

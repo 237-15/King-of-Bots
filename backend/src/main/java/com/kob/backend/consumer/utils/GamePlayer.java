@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Player {
+public class GamePlayer {
     private Integer id;
     private Integer sx;  //坐标
     private Integer sy;  //坐标
