@@ -16,6 +16,13 @@
 	</properties>
 
 	<dependencies>
+		<!--oj评测机-->
+		<dependency>
+			<groupId>org.jooq</groupId>
+			<artifactId>joor</artifactId>
+			<version>0.9.14</version>
+		</dependency>
+
 		<dependency>
 			<groupId>com.alibaba.fastjson2</groupId>
 			<artifactId>fastjson2</artifactId>

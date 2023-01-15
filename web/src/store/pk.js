@@ -4,6 +4,7 @@ export default {
         socket: null,  //后端的 WebSocket
         opponent_username: "",  //对手用户名
         opponent_photo: "",  //对手头像
+
         gameMap: "null",  //游戏地图
         idA: 0,
         sxA: 0,
@@ -11,18 +12,19 @@ export default {
         idB: 0,
         sxB: 0,
         syB: 0,
+
         gameObject: null,
         loser: "none",  //none, all, A, B  输者
-        time: "",  //计时器，stop, start,停止、开始计时
+        time: "",  //计时器，start stop success 开始计时，停止计时并重置，匹配成功停止计时并重置
     },
     getters: {
     },
-    mutations: {  //数据更新
-        updateSocket(state, socket) {
+    mutations: {  //数据更新 
+        updateSocket(state, socket) {  
             state.socket = socket
         },
 
-        updateOpponent(state, opponent) {
+        updateOpponent(state, opponent) {  //如果传过来2个以上的参数就写data,这是框架定义好的,当然写别的也没问题
             state.opponent_username = opponent.opponent_username
             state.opponent_photo = opponent.opponent_photo
         },

@@ -5,6 +5,7 @@ export default {
         id: "",
         username: "",
         photo: "",
+        rating: 1500,
         token: "",
         is_login: false,
         pulling_info: true,  // 是否正在从云端拉取信息
@@ -17,6 +18,7 @@ export default {
             state.id = user.id;
             state.username = user.username;
             state.photo = user.photo;
+            state.rating = user.rating;
             state.is_login = user.is_login;
         },
         updateToken(state, token) {
@@ -35,7 +37,7 @@ export default {
 
     },
     actions: {  //辅助函数  store.dispatch()
-        login(context, data) {
+        login(context, data) {  //如果传过来2个以上的参数就写data,这是框架定义好的
             $.ajax({
                 url: "http://127.0.0.1:3000/user/account/login/",
                 type: "post",

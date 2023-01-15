@@ -4,8 +4,10 @@ import com.alibaba.fastjson2.JSONObject;
 import com.kob.backend.consumer.utils.Game;
 import com.kob.backend.consumer.utils.JwtAuthentication;
 import com.kob.backend.consumer.utils.MatchTool;
+import com.kob.backend.mapper.BotMapper;
 import com.kob.backend.mapper.RecordMapper;
 import com.kob.backend.mapper.UserMapper;
+import com.kob.backend.pojo.Bot;
 import com.kob.backend.pojo.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,14 +21,15 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 @ServerEndpoint("/websocket/{token}")  // 注意不要以'/'结尾
 public class WebSocketServer {
-
     // 线程安全的HashMap和Set
     public final static ConcurrentHashMap<Integer, WebSocketServer> users = new ConcurrentHashMap<>();  //全局变量，对所有的实例化对象都可见，存储所有的链接
     private User user;  //储存用户信息，一旦匹配成功，将展示对手的头像和昵称
-    private Game game = null;  //游戏
+    public Game game = null;  //游戏
     private Session session = null;  //每个链接用session来维护
     public static UserMapper userMapper;
     public static RecordMapper recordMapper;
+
+    public static BotMapper botMapper;
     @Autowired                                               //因为WebSocketServer
     public void setUserMapper(UserMapper userMapper) {       //不是单列模式
         WebSocketServer.userMapper = userMapper;             //所以不能用平常的注入方式
@@ -35,6 +38,8 @@ public class WebSocketServer {
     public void setRecordMapper(RecordMapper recordMapper) {
         WebSocketServer.recordMapper = recordMapper;
     }
+    @Autowired
+    public void setBotMapper(BotMapper botMapper) { WebSocketServer.botMapper = botMapper; }
     @OnOpen
     public void onOpen(Session session, @PathParam("token") String token) throws IOException {
         this.session = session;
@@ -58,8 +63,18 @@ public class WebSocketServer {
         }
     }
 
-    public static void startGame(User userA, User userB) {
-        Game game = new Game(13, 14, 20, userA.getId(), userB.getId());  //创建游戏
+    public static void startGame(User userA, User userB, Integer userABotId, Integer userBBotId) {
+        Bot botA = botMapper.selectById(userABotId);
+        Bot botB = botMapper.selectById(userBBotId);
+        Game game = new Game(  //创建游戏
+                13,
+                14,
+                20,
+                userA.getId(),
+                botA,
+                userB.getId(),
+                botB
+        );
         game.creatMap();  //创建游戏地图
         if(users.get(userA.getId()) != null)
             users.get(userA.getId()).game = game;
@@ -93,9 +108,9 @@ public class WebSocketServer {
         if(users.get(userB.getId()) != null)
             users.get(userB.getId()).sendMessage(respB.toJSONString());  //发送信息给前端
     }
-    private void startMatching() {
+    private void startMatching(Integer botId) {
         System.out.println("start matching!");
-        MatchTool.addPlayer(user.getId(), user.getRating());
+        MatchTool.addPlayer(user.getId(), user.getRating(), botId);
     }
 
     private void stopMatching() {
@@ -105,9 +120,11 @@ public class WebSocketServer {
 
     private void move(int direction) {  //云端的蛇移动
         if(game.getPlayerA().getId().equals(user.getId())) {  //判断是A玩家还是B玩家发送的消息
-            game.SetNextStepA(direction);
+            if(game.getPlayerA().getBotId().equals(-1))  //亲自出马，才接受前端传过来的操作
+                game.SetNextStepA(direction);
         } else if(game.getPlayerB().getId().equals(user.getId())){
-            game.SetNextStepB(direction);
+            if(game.getPlayerB().getBotId().equals(-1))  //亲自出马，才接受前端传过来的操作
+                game.SetNextStepB(direction);
         }
     }
 
@@ -117,7 +134,8 @@ public class WebSocketServer {
         JSONObject data = JSONObject.parseObject(message);
         String event = data.getString("event");
         if("start-matching".equals(event)) {
-            startMatching();
+            Integer botId = Integer.parseInt(data.getString("bot_id"));
+            startMatching(botId);
         } else if("stop-matching".equals(event)){
             stopMatching();
         } else if("move".equals(event)) {

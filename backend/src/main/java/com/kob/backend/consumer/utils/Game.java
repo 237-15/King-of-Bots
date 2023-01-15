@@ -2,7 +2,9 @@ package com.kob.backend.consumer.utils;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.kob.backend.consumer.WebSocketServer;
+import com.kob.backend.pojo.Bot;
 import com.kob.backend.pojo.Record;
+import com.kob.backend.pojo.User;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -49,13 +51,29 @@ public class Game extends Thread{  //继承Thread类，就可以变成多线程�
         }
     }
 
-    public Game(Integer rows, Integer cols, Integer wall_count, Integer idA, Integer idB) {  //构造函数
+    public Game(Integer rows,  //构造函数
+                Integer cols,
+                Integer wall_count,
+                Integer idA,
+                Bot botA,
+                Integer idB,
+                Bot botB) {
         this.rows = rows;
         this.cols = cols;
         this.wall_count = wall_count;
         this.map = new int[rows][cols];
-        gamePlayerA = new GamePlayer(idA, rows - 2, 1, new ArrayList<>());
-        gamePlayerB = new GamePlayer(idB, 1, cols - 2, new ArrayList<>());
+        Integer botAId = -1, botBId = -1;
+        String botACode = "", botBCode = "";
+        if(botA != null) {  //因为前面在查询时玩家可能是亲自出马，就会查不到bot，bot就会为空
+            botAId = botA.getId();
+            botACode = botA.getContent();
+        }
+        if(botB != null) {
+            botBId = botB.getId();
+            botBCode = botB.getContent();
+        }
+        gamePlayerA = new GamePlayer(idA, rows - 2, 1, new ArrayList<>(), botAId, botACode);
+        gamePlayerB = new GamePlayer(idB, 1, cols - 2, new ArrayList<>(), botBId, botBCode);
     }
 
     private boolean check( int sx, int sy, int tx, int ty) {  //判断地图的连通性（可以从地图的左下角走到右上角）
@@ -122,7 +140,26 @@ public class Game extends Thread{  //继承Thread类，就可以变成多线程�
         }
         return res.toString();
     }
+
+    private void updateRating(GamePlayer gamePlayer, Integer rating) {  //更新天梯积分
+        User user = WebSocketServer.userMapper.selectById(gamePlayer.getId());
+        user.setRating(rating);
+        WebSocketServer.userMapper.updateById(user);
+    }
     private void saveToRecord() {  //存入对局记录到数据库里
+        //更新天梯积分
+        Integer ratingA = WebSocketServer.userMapper.selectById(gamePlayerA.getId()).getRating();
+        Integer ratingB = WebSocketServer.userMapper.selectById(gamePlayerB.getId()).getRating();
+        if("A".equals(loser)) {
+            ratingA -= 2;  //A输 A减2分
+            ratingB += 5;  //B赢 B加5分
+        } else if("B".equals(loser)) {
+            ratingA += 5;
+            ratingB -= 2;
+        }  //平局不加分
+        updateRating(gamePlayerA, ratingA);
+        updateRating(gamePlayerB, ratingB);
+
         Record record = new Record(
                 null,
                 gamePlayerA.getId(),
@@ -139,6 +176,32 @@ public class Game extends Thread{  //继承Thread类，就可以变成多线程�
         );
         WebSocketServer.recordMapper.insert(record);
     }
+
+    private void sendBotMessage(GamePlayer player) {
+        if(!player.getBotId().equals(-1)) {  //bot出战
+            GamePlayer me, you;
+            if(player.getId().equals(gamePlayerA.getId())) {
+                me = gamePlayerA;
+                you = gamePlayerB;
+            } else {
+                me = gamePlayerB;
+                you = gamePlayerA;
+            }
+            Integer userId = player.getId();
+            String botCode = player.getBotCode();
+            String mapInfo = //地图信息：玩家A的sx,sy,steps,玩家B的sx,sy,steps,map,中间用#隔开,其中的steps用()括上
+                    getMapString() + "#" +
+                    me.getSx().toString() + "#" +
+                    me.getSy().toString() + "#(" +
+                    me.getStepsString() + ")#" +
+                    you.getSx().toString() + "#" +
+                    you.getSy().toString() + "#(" +
+                    you.getStepsString() + ")";
+
+            BotTool.addBot(userId, botCode, mapInfo);  //加入消息队列
+        }
+    }
+
     private boolean nextStep() {  //两名玩家的下一步操作
         try {
             Thread.sleep(200);  //防止有玩家在短时间内多次输入，前端会渲染不出来,200毫秒是因为前端设定设的速度是每秒走5格,走一格要200毫秒
@@ -146,14 +209,10 @@ public class Game extends Thread{  //继承Thread类，就可以变成多线程�
             throw new RuntimeException(e);
         }
 
+        sendBotMessage(gamePlayerA);  //判断玩家是否用bot出站，如果是则发送bot信息给BotTool线程处理,否则直接返回
+        sendBotMessage(gamePlayerB);  //这个函数的最终效果是使nextStepA和nextStepB被赋值
+
         for(int i = 0; i < 50; i++){  //5秒后，若有玩家未输入则游戏结束
-            if(i == 0) {  //前端的动画要2秒
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
             try {
                 Thread.sleep(100);  //睡100毫秒
                 lock.lock();
@@ -167,7 +226,6 @@ public class Game extends Thread{  //继承Thread类，就可以变成多线程�
                     lock.unlock();
                 }
             } catch (InterruptedException e) {
-//                throw new RuntimeException(e);  //报异常
                 e.printStackTrace();  //直接输出
             }
         }
@@ -237,6 +295,13 @@ public class Game extends Thread{  //继承Thread类，就可以变成多线程�
     @Override
     public void run() {  //alt + insert键，重写方法  run()  入口函数
         for(int i = 0; i < 1000; i++) {  //在1000个回合内游戏肯定会结束
+            if(i == 0) {  //前端匹配成功后要等两秒在进入到对战界面
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
             if(nextStep()) {  //获取到了两名玩家的下一步操作
                 judge();
                 if(status.equals("playing")) {

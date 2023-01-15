@@ -11,10 +11,12 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GamePlayer {
-    private Integer id;
+    private Integer id;  // 玩家的id
     private Integer sx;  //坐标
     private Integer sy;  //坐标
     private List<Integer> steps;  //每一步的方向
+    private Integer botId;  //-1表示亲自出马
+    private String botCode;  //bot代码
 
     private boolean check_tail_increasing(int step) {  // 检验当前回合，蛇的长度是否增加
         if (step <= 10) return true;

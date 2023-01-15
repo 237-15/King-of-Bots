@@ -12,7 +12,7 @@ export class GameMap extends AcGameObject {
         this.L = 0;
 
         this.rows = 13;
-        this.cols = 14;
+        this.cols = 14;  //让地图的长宽不一致是为了让两条条蛇蛇头所在位置的坐标之和的奇偶性不同，保证了两条蛇不会在同一格相遇
         
         this.inner_walls_count = 20;
         this.walls = [];
@@ -36,22 +36,46 @@ export class GameMap extends AcGameObject {
     }
 
     add_listening_events() {
-        this.ctx.canvas.focus();
+        if(this.store.state.record.is_record === true) {  //如果是录像
+            let k = 0;  //步数
+            const stepsA = this.store.state.record.stepsA;
+            const stepsB = this.store.state.record.stepsB;
+            const loser = this.store.state.record.record_loser;
+            const [snake0, snake1] = this.snakes;
+            const interval_id = setInterval(() => {
+                if(k >= stepsA.length - 1) {  //最后一步会有蛇死亡，所以只放到最后一步的前一步
+                    if(loser === "all" || loser === "A") {
+                        snake0.status = "die";
+                    }
+                    if(loser === "all" || loser === "B") {
+                        snake1.status = "die";
+                    }
+                    clearInterval(interval_id);  //停止此函数
+                } else {
+                    snake0.set_direction(parseInt(stepsA[k]));
+                    snake1.set_direction(parseInt(stepsB[k]));
+                }
+                k++;
+            }, 300);
 
-        this.ctx.canvas.addEventListener("keydown", e => {
-            let d = -1;  //玩家的操作 0,1,2,3 表示蛇的移动方向 上下左右
-            if (e.key === 'w') d = 0;
-            else if (e.key === 'd') d = 1;
-            else if (e.key === 's') d = 2;
-            else if (e.key === 'a') d = 3;
-            
-            if(d >= 0) {
-                this.store.state.pk.socket.send(JSON.stringify({
-                    event: "move",
-                    direction: d,
-                }))
-            }
-        });
+        } else {
+            this.ctx.canvas.focus();  //聚焦窗口，接收输入
+
+            this.ctx.canvas.addEventListener("keydown", e => {
+                let d = -1;  //玩家的操作 0,1,2,3 表示蛇的移动方向 上下左右
+                if (e.key === 'w') d = 0;
+                else if (e.key === 'd') d = 1;
+                else if (e.key === 's') d = 2;
+                else if (e.key === 'a') d = 3;
+                
+                if(d >= 0) {
+                    this.store.state.pk.socket.send(JSON.stringify({
+                        event: "move",
+                        direction: d,
+                    }))
+                }
+            });
+        }
     }
 
     start() {

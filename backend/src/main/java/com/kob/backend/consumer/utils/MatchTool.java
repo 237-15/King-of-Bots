@@ -1,9 +1,7 @@
 package com.kob.backend.consumer.utils;
 
 import com.kob.backend.consumer.WebSocketServer;
-import com.kob.backend.mapper.UserMapper;
 import com.kob.backend.pojo.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -15,11 +13,11 @@ public class MatchTool extends Thread{
     private static List<MatchPlayer> matchTool = new ArrayList<>();  //匹配池
     private final static ReentrantLock lock = new ReentrantLock();
 
-    public static void addPlayer(Integer id, Integer rating) {
+    public static void addPlayer(Integer id, Integer rating, Integer botId) {
         System.out.println("add Player: " + id + " " + rating);
         lock.lock();
         try {
-            MatchPlayer matchPlayer = new MatchPlayer(id, rating, 0);
+            MatchPlayer matchPlayer = new MatchPlayer(id, rating, 0, botId);
             matchTool.add(matchPlayer);
         }finally {
             lock.unlock();
@@ -48,7 +46,7 @@ public class MatchTool extends Thread{
         }
     }
 
-    private boolean check(MatchPlayer PlayerA, MatchPlayer PlayerB) {
+    private boolean check(MatchPlayer PlayerA, MatchPlayer PlayerB) {  //检查玩家A和B是否可以匹配成功
         int ratingDelta = Math.abs(PlayerA.getRating() - PlayerB.getRating());
         int waitingTime = Math.min(PlayerA.getWaitingTime(), PlayerB.getWaitingTime());
         return ratingDelta <= waitingTime * 10;
@@ -69,7 +67,7 @@ public class MatchTool extends Thread{
                     used[i] = used[j] = true;
                     removePlayer(PlayerA.getId());
                     removePlayer(PlayerB.getId());
-                    WebSocketServer.startGame(userA, userB);
+                    WebSocketServer.startGame(userA, userB, PlayerA.getBotId(), PlayerB.getBotId());
                     break;
                 }
             }

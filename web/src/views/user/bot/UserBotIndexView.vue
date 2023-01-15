@@ -6,7 +6,15 @@
             <div class="col-3">
                 <div class="card" style="margin-top: 20px;">
                     <div class="card-body">
-                        <img :src="$store.state.user.photo" alt="" style="width:100%"/>
+                        <img :src="$store.state.user.photo" alt="" style="width:100%;"/>
+                    </div>
+                    <div class="username">
+                        昵称：
+                        {{ $store.state.user.username }}
+                    </div>
+                    <div class="username">
+                        天梯分：
+                        {{ $store.state.user.rating }}
                     </div>
                 </div>
             </div>
@@ -63,7 +71,6 @@
                             <thead>
                                 <tr>
                                     <th>名称</th>
-                                    <th>天梯分</th>
                                     <th>创建时间</th>
                                     <th>操作</th>
                                 </tr>
@@ -71,7 +78,6 @@
                             <tbody>
                                 <tr v-for="bot in bots" :key="bot.id">
                                     <td>{{ bot.title }}</td>
-                                    <td>{{ bot.rating }}</td>
                                     <td>{{ bot.createTime }}</td>
                                     <td>
                                         <button type="button" class="btn btn-info" data-bs-toggle="modal" :data-bs-target="'#update-bot-modal-' + bot.id">修改</button>
@@ -280,5 +286,10 @@ export default {
 <style>
 div.error_message {
     color: red;
+}
+div.username {
+    text-align: center;
+    font-size: 3vh;
+    font-weight: 600;
 }
 </style>
