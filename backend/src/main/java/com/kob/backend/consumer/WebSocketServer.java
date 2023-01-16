@@ -1,9 +1,9 @@
 package com.kob.backend.consumer;
 
 import com.alibaba.fastjson2.JSONObject;
-import com.kob.backend.consumer.utils.Game;
-import com.kob.backend.consumer.utils.JwtAuthentication;
-import com.kob.backend.consumer.utils.MatchTool;
+import com.kob.backend.consumer.utils.game.Game;
+import com.kob.backend.consumer.utils.jwt.JwtAuthentication;
+import com.kob.backend.consumer.utils.matchtool.MatchTool;
 import com.kob.backend.mapper.BotMapper;
 import com.kob.backend.mapper.RecordMapper;
 import com.kob.backend.mapper.UserMapper;

@@ -2,11 +2,13 @@
     <div class = "matchground">
         <div class="row justify-content-md-center">
             <div class="col-4">
-                <div class="user-photo">
-                    <img :src="store.state.user.photo" alt="" />
-                </div>
-                <div class="user-username">
-                    {{ store.state.user.username }}
+                <div class="username_photo_background" style="margin-left: 7vh;">
+                    <div class="user-photo">
+                        <img :src="store.state.user.photo" alt="" />
+                    </div>
+                    <div class="user-username">
+                        {{ store.state.user.username }}
+                    </div>
                 </div>
             </div>
             <div class="col-4">
@@ -26,14 +28,16 @@
                 </div>
             </div>
             <div class="col-4">
-                <div class="user-photo">
-                    <img :src="store.state.pk.opponent_photo" alt="" />
-                </div>
-                <div class="user-username">
-                    {{ store.state.pk.opponent_username }}
+                <div class="username_photo_background">
+                    <div class="user-photo">
+                        <img :src="store.state.pk.opponent_photo" alt="" />
+                    </div>
+                    <div class="user-username">
+                        {{ store.state.pk.opponent_username }}
+                    </div>
                 </div>
             </div>
-            <button @click="click_btn" class="btn btn-primary">{{ btn_info }}</button>
+            <button @click="click_btn" class="btn btn-warning">{{ btn_info }}</button>
         </div>
     </div>
 </template>
@@ -135,25 +139,36 @@ div.matchground {
     width: 60vw;   
     height: 70vh;
     margin: 40px auto;
-    background-color: rgba(28, 25, 25, 0.7);
+    border-radius: 5vh;
+    background-color: rgb(51, 102, 153, 0.9);
+    box-shadow: 0px 0px 10px #07065e;
 }
 
 div.user-username {
     text-align: center;
     margin-top: 3vh;
     color:aliceblue;
-    font-size: larger;
+    font-size: 25px;
     font-weight: 600;
 }
 
 div.user-photo {
     text-align: center;
-    margin-top: 15vh;
+    padding-top: 4vh;
 }
 
 div.user-photo > img {
     border-radius: 50%;
     width: 20vh;
+}
+
+div.username_photo_background {
+    background-color: rgb(51, 204, 153);
+    box-shadow: 4px 4px 5px #1e7a5b;
+    border-radius: 5vh;
+    width: 15vw;
+    height: 20vw;
+    margin-top: 12vh;
 }
 
 button {

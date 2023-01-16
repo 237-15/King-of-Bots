@@ -49,7 +49,7 @@ div.result_board {
     top: 30vh;
     left: 35vw;
     position: absolute;
-    background-color: rgba(50, 50, 50, 0.7);
+    background-color: rgba(50, 50, 50, 0.8);
 }
 div.result_board_grade {
     padding-top: 6vh;

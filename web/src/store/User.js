@@ -9,7 +9,8 @@ export default {
         token: "",
         is_login: false,
         pulling_info: true,  // 是否正在从云端拉取信息
-        button: false
+        button: false,
+        rate: 1000  //录像时每一回合的时间
     },
     getters: {
     },
@@ -33,8 +34,10 @@ export default {
         },
         updatePullingInfo(state, pulling_info) {
             state.pulling_info = pulling_info;
-        }
-
+        },
+        updateRate(state, rate) {
+            state.rate = rate
+        },
     },
     actions: {  //辅助函数  store.dispatch()
         login(context, data) {  //如果传过来2个以上的参数就写data,这是框架定义好的

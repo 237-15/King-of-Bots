@@ -15,46 +15,12 @@ export default {
   components: {
     NavBar
   },
-  
-  // setup() {
-  //   $.ajax({
-  //     url: "http://127.0.0.1:3000/user/account/token/",
-  //     type: "post",
-  //     data: {
-  //       username: "lhy",
-  //       password: "123456",
-  //       confirmedPassword: "123456",
-  //     },
-  //     success(resp) {
-  //       console.log(resp);
-  //     },
-  //     error(resp) {
-  //       console.log(resp);
-  //     }
-  //   });
-
-  //   $.ajax({
-  //     url: "http://127.0.0.1:3000/user/account/info/",
-  //     type: "get",
-  //     headers: {
-  //       Authorization: "Bearer " + store.state.user.token, //授权
-  //       //Authentication  认证
-  //     },
-  //     success(resp) {
-  //       console.log(resp);
-  //     },
-  //     error(resp) {
-  //       console.log(resp);
-  //     }
-  //   })
-  // }
-  
 }
 </script>
 
 <style>
 body {
-  background-image: url("@/assets/images/background.png");
+  background-image: url("https://pica.zhimg.com/v2-e4e60a926de9293e9ec38b1eabb593b2_r.jpg?source=1940ef5c");
   background-size: cover;
 }
 </style>

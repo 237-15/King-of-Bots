@@ -17,6 +17,7 @@
             <ul class="navbar-nav" v-if="$store.state.user.is_login">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img :src="$store.state.user.photo" alt="" class="user-photo"/>
                         {{ $store.state.user.username }}
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -71,6 +72,9 @@ export default {
 </script>
 
 <style scoped>
-
+img.user-photo {
+    border-radius: 50%;
+    width: 3vh;
+}
 </style>
     

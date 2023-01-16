@@ -38,6 +38,7 @@ export class GameMap extends AcGameObject {
     add_listening_events() {
         if(this.store.state.record.is_record === true) {  //如果是录像
             let k = 0;  //步数
+            let rate = 500;  //每一回合的时间
             const stepsA = this.store.state.record.stepsA;
             const stepsB = this.store.state.record.stepsB;
             const loser = this.store.state.record.record_loser;
@@ -56,7 +57,8 @@ export class GameMap extends AcGameObject {
                     snake1.set_direction(parseInt(stepsB[k]));
                 }
                 k++;
-            }, 300);
+                rate = this.store.state.user.rate
+            }, rate);
 
         } else {
             this.ctx.canvas.focus();  //聚焦窗口，接收输入

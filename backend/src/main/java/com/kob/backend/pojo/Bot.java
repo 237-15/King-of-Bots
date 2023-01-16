@@ -16,9 +16,11 @@ public class Bot {
     @TableId(type = IdType.AUTO)
     private Integer id;
     private Integer userId;
-    private String title;
-    private String description;
-    private String content;
+    private String title;  //标题
+    private String description;  //介绍
+    private String content;  //具体代码
+    private Integer winCount;  //胜利的次数
+    private Integer loseCount;  //失败的次数
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date createTime;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")

@@ -6,7 +6,7 @@
             <div class="col-3">
                 <div class="card" style="margin-top: 20px;">
                     <div class="card-body">
-                        <img :src="$store.state.user.photo" alt="" style="width:100%;"/>
+                        <img :src="$store.state.user.photo" alt="" style="width:100%; border-radius: 20px;"/>
                     </div>
                     <div class="username">
                         昵称：
@@ -71,75 +71,75 @@
                             <thead>
                                 <tr>
                                     <th>名称</th>
-                                    <th>创建时间</th>
-                                    <th>操作</th>
+                                    <th style="text-align: center;">胜/负</th>
+                                    <th style="text-align: center;">创建时间</th>
+                                    <th style="text-align: center;">操作</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr v-for="bot in bots" :key="bot.id">
                                     <td>{{ bot.title }}</td>
-                                    <td>{{ bot.createTime }}</td>
-                                    <td>
+                                    <td style="text-align: center;">{{ bot.winCount }}/{{bot.loseCount}}</td>
+                                    <td style="text-align: center;">{{ bot.createTime }}</td>
+                                    <td style="text-align: center;">
                                         <button type="button" class="btn btn-info" data-bs-toggle="modal" :data-bs-target="'#update-bot-modal-' + bot.id">修改</button>
                                         <button type="button" class="btn btn-danger" style="margin-left: 10px" data-bs-toggle="modal" :data-bs-target="'#remove-bot-modal' + bot.id">删除</button>
-
-                                        <!-- Modal-update -->
-                                        <div class="modal fade" :id="'update-bot-modal-' + bot.id" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
-                                            <div class="modal-dialog modal-xl">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                <h5 class="modal-title">修改</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </td>
+                                    <!-- Modal-update -->
+                                    <div class="modal fade" :id="'update-bot-modal-' + bot.id" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+                                        <div class="modal-dialog modal-xl">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                            <h5 class="modal-title">修改</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <!-- 表单 -->
+                                                <div class="mb-3">
+                                                    <label for="add-bot-title" class="form-label">标题</label>
+                                                    <input v-model="bot.title" type="email" class="form-control" id="add-bot-title">
                                                 </div>
+                                                <div class="mb-3">
+                                                    <label for="add-bot-description" class="form-label">简介</label>
+                                                    <textarea v-model="bot.description" class="form-control" id="add-bot-description" rows="3" placeholder="请输入Bot简介"></textarea>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="add-bot-code" class="form-label">代码</label>
+                                                    <!-- ace编辑器 -->
+                                                    <VAceEditor
+                                                        v-model:value="bot.content"
+                                                        @init="editorInit"
+                                                        lang="c_cpp"
+                                                        theme="textmate"
+                                                        style="height: 300px" />
+                                                    <!-- ace编辑器 -->
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <div class="error_message">{{ bot.error_message }}</div>
+                                            <button type="button" class="btn btn-primary" @click="update_bot(bot)">提交</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                                            </div>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    <!-- modal-update -->
+
+                                    <!-- modal-remove -->
+                                    <div class="modal fade" :id="'remove-bot-modal' + bot.id" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
                                                 <div class="modal-body">
-                                                    <!-- 表单 -->
-                                                    <div class="mb-3">
-                                                        <label for="add-bot-title" class="form-label">标题</label>
-                                                        <input v-model="bot.title" type="email" class="form-control" id="add-bot-title">
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label for="add-bot-description" class="form-label">简介</label>
-                                                        <textarea v-model="bot.description" class="form-control" id="add-bot-description" rows="3" placeholder="请输入Bot简介"></textarea>
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label for="add-bot-code" class="form-label">代码</label>
-                                                        <!-- ace编辑器 -->
-                                                        <VAceEditor
-                                                            v-model:value="bot.content"
-                                                            @init="editorInit"
-                                                            lang="c_cpp"
-                                                            theme="textmate"
-                                                            style="height: 300px" />
-                                                        <!-- ace编辑器 -->
-                                                    </div>
+                                                    <span style="font-size: 120%">您确定要删除此bot吗？</span>
                                                 </div>
                                                 <div class="modal-footer">
-                                                    <div class="error_message">{{ bot.error_message }}</div>
-                                                <button type="button" class="btn btn-primary" @click="update_bot(bot)">提交</button>
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                                                </div>
-                                            </div>
-                                            </div>
-                                        </div>
-                                        <!-- modal-update -->
-
-                                        <!-- modal-remove -->
-                                        <div class="modal fade" :id="'remove-bot-modal' + bot.id" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-centered">
-                                                <div class="modal-content">
-                                                    <div class="modal-body">
-                                                        <span style="font-size: 120%">您确定要删除此bot吗？</span>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-primary" @click="remove_bot(bot)">确定</button>
-                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                                                    </div>
+                                                    <button type="button" class="btn btn-primary" @click="remove_bot(bot)">确定</button>
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
                                                 </div>
                                             </div>
                                         </div>
-                                        <!-- modal-remove -->
-
-                                    </td>
+                                    </div>
+                                    <!-- modal-remove -->
                                 </tr>
                             </tbody>
                         </table>

@@ -1,4 +1,4 @@
-package com.kob.backend.consumer.utils;
+package com.kob.backend.consumer.utils.game;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

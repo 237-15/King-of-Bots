@@ -1,9 +1,10 @@
-package com.kob.backend.consumer.utils;
+package com.kob.backend.consumer.utils.bottool;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
-public class BotCode implements com.kob.backend.consumer.utils.BotCodeInterface {
+public class BotCode implements com.kob.backend.consumer.utils.bottool.BotCodeInterface {
     static class Cell {
         public int x, y;
         public Cell(int x, int y) {
@@ -59,7 +60,17 @@ public class BotCode implements com.kob.backend.consumer.utils.BotCodeInterface 
         for (Cell c: bCells) g[c.x][c.y] = 1;
 
         int[] dx = {-1, 0, 1, 0}, dy = {0, 1, 0, -1};
-        for (int i = 0; i < 4; i ++ ) {
+        Random random = new Random();
+        int num = random.nextInt(4);  //0、1、2、3
+
+        for (int i = num; i < 4; i ++ ) {
+            int x = aCells.get(aCells.size() - 1).x + dx[i];
+            int y = aCells.get(aCells.size() - 1).y + dy[i];
+            if (x >= 0 && x < 13 && y >= 0 && y < 14 && g[x][y] == 0) {
+                return i;
+            }
+        }
+        for(int i = 0; i < num; i++){
             int x = aCells.get(aCells.size() - 1).x + dx[i];
             int y = aCells.get(aCells.size() - 1).y + dy[i];
             if (x >= 0 && x < 13 && y >= 0 && y < 14 && g[x][y] == 0) {

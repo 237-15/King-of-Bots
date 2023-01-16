@@ -1,4 +1,4 @@
-package com.kob.backend.consumer.utils;
+package com.kob.backend.consumer.utils.game;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,5 +8,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Cell {
-    int x, y;  //表示蛇身的位置
+    public int x, y;  //表示蛇身的位置
 }

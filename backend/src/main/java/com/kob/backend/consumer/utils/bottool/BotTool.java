@@ -1,4 +1,4 @@
-package com.kob.backend.consumer.utils;
+package com.kob.backend.consumer.utils.bottool;
 
 import java.util.LinkedList;
 import java.util.Queue;

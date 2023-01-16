@@ -1,34 +1,34 @@
 <template>
     <ContentField>
         <div class="title">对局列表</div>
-        <table class="table table-striped table-hover"  style="text-align: center;">
+        <table class="table table-striped table-hover">
             <thead>
                 <tr>
-                    <th>A</th>
-                    <th>B</th>
-                    <th>对战结果</th>
-                    <th>对战时间</th>
-                    <th>操作</th>
+                    <th style="padding-left: 9vh;">A</th>
+                    <th style="padding-left: 9vh;">B</th>
+                    <th style="text-align: center;">对战结果</th>
+                    <th style="text-align: center;">对战时间</th>
+                    <th style="text-align: center;">操作</th>
                 </tr>
             </thead>
             <tbody>
                 <!-- record包含record也就是游戏信息和两名玩家的用户名和头像 -->
                 <tr v-for="record in records" :key="record.record.id">  
-                    <td>
+                    <td style="padding-left: 5vh;">
                         <img :src="record.photoA" class="record-user-photo" alt="" /> &nbsp;
                         <span class="record-user-username">{{ record.usernameA }}</span>
                     </td>
-                    <td>
+                    <td style="padding-left: 5vh;">
                         <img :src="record.photoB" class="record-user-photo" alt="" /> &nbsp;
                         <span class="record-user-username">{{ record.usernameB }}</span>
                     </td>
-                    <td>
+                    <td style="text-align: center;">
                         <span class="record-result">{{ record.result }}</span>
                     </td>
-                    <td>
+                    <td style="text-align: center;">
                         <span class="record-record-createTime">{{ record.record.createTime }}</span>
                     </td>
-                    <td>
+                    <td style="text-align: center;">
                         <button @click="open_record_content(record.record.id)" type="button" class="btn btn-info">查看</button>
                     </td>
                 </tr>

@@ -1,7 +1,8 @@
-package com.kob.backend.consumer.utils;
+package com.kob.backend.consumer.utils.game;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.kob.backend.consumer.WebSocketServer;
+import com.kob.backend.consumer.utils.bottool.BotTool;
 import com.kob.backend.pojo.Bot;
 import com.kob.backend.pojo.Record;
 import com.kob.backend.pojo.User;
@@ -252,7 +253,26 @@ public class Game extends Thread{  //继承Thread类，就可以变成多线程�
         }
     }
 
+    private void storeBotKD() {  //更新bot的KD
+        Bot botA = WebSocketServer.botMapper.selectById(gamePlayerA.getBotId());
+        Bot botB = WebSocketServer.botMapper.selectById(gamePlayerB.getBotId());
+        if("A".equals(loser)) {
+            if(botA != null)
+                botA.setLoseCount(botA.getLoseCount() + 1);
+            if(botB != null)
+                botB.setWinCount(botB.getWinCount() + 1);
+        } else if("B".equals(loser)) {
+            if(botA != null)
+                botA.setWinCount(botA.getWinCount() + 1);
+            if(botB != null)
+                botB.setLoseCount(botB.getLoseCount() + 1);
+        }
+        WebSocketServer.botMapper.updateById(botA);
+        WebSocketServer.botMapper.updateById(botB);
+    }
+
     private void SendResult() {  //向两名玩家公布游戏结果
+        storeBotKD();  //更新bot的KD
         JSONObject resp = new JSONObject();
         resp.put("event", "result");
         resp.put("loser", loser);

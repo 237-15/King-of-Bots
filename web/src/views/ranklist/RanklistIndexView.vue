@@ -1,22 +1,37 @@
 <template>
     <ContentField>
         <div class="title">排行榜</div>
-        <table class="table table-striped table-hover" style="text-align: center;">
+        <table class="table table-striped table-hover">
             <thead>
                 <tr>
-                    <th>玩家</th>
-                    <th>天梯分</th>
+                    <th>排名</th>
+                    <th style="padding-left: 29vh;">玩家</th>
+                    <th style="text-align: center;">天梯分</th>
                 </tr>
             </thead>
             <tbody>
-                
-                <tr v-for="user in users" :key="user.id">  
+                <tr style="background-color: aquamarine;">
                     <td>
-                        <img :src="user.photo" class="record-user-photo" alt="" /> &nbsp;
-                        <span class="record-user-username">{{ user.username }}</span>
+                        {{ my_ranking }}
                     </td>
+                    <td style="padding-left: 25vh;">
+                        <img :src="my.photo" class="record-user-photo" alt="" /> &nbsp;
+                        <span class="record-user-username">{{ my.username }}</span>
+                    </td>
+                    <td style="text-align: center;">
+                        {{ my.rating }}
+                    </td>
+                </tr>
+                <tr v-for="user in users" :key="user.user.id">  
                     <td>
-                        {{ user.rating }}
+                        {{ user.ranking }}
+                    </td>
+                    <td style="padding-left: 25vh;">
+                        <img :src="user.user.photo" class="record-user-photo" alt="" /> &nbsp;
+                        <span class="record-user-username">{{ user.user.username }}</span>
+                    </td>
+                    <td style="text-align: center;">
+                        {{ user.user.rating }}
                     </td>
                 </tr>
             </tbody>
@@ -78,6 +93,7 @@ export default {
         let user_count = 0;  //玩家总数
         let pages = ref([]);  //可展示的页数数组   如可展示出4、5、6、7、8页，高亮在第6页
         let my = ref();  //玩家自己的信息
+        let my_ranking = ref(-1);  //玩家的排名
 
         const click_page = page => {
             let max_page = parseInt(Math.ceil((user_count / 8)))  //向上取整
@@ -117,6 +133,8 @@ export default {
 
         const pull_page = page => {
             page = current_page
+            users.value = []
+            my.value = []
 
             $.ajax({
                 url: "http://127.0.0.1:3000/ranklist/getlist/",
@@ -128,11 +146,21 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(resp) {
-                    users.value = resp.users;
+                    for(let i in resp.users) {
+                        users.value.push({
+                            user: resp.users[i],
+                            ranking: parseInt(i) + 1
+                        })
+                        console.log(users.value)
+                    }
                     user_count = resp.user_count;
                     for(const user of users.value) {
-                        if(user.id == store.state.user.id) {
-                            my.value = user
+                        if(user.user.id == store.state.user.id) {
+                            my.value = user.user
+                            my_ranking.value = user.ranking
+                            console.log(my.value)
+                            console.log(my_ranking)
+                            break
                         }
                     }
                     update_pages();
@@ -150,6 +178,7 @@ export default {
             pages,
             click_page,
             my,
+            my_ranking,
         }
     }
 }

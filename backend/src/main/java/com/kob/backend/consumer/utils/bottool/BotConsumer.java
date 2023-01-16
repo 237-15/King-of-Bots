@@ -1,6 +1,7 @@
-package com.kob.backend.consumer.utils;
+package com.kob.backend.consumer.utils.bottool;
 
 import com.kob.backend.consumer.WebSocketServer;
+import com.kob.backend.consumer.utils.game.Game;
 import org.joor.Reflect;
 
 import java.util.UUID;
@@ -22,7 +23,7 @@ public class BotConsumer extends Thread{
     }
 
     private String addUid(String code, String uid) {  // 在code中的Bot类名后添加uid
-        int k = code.indexOf(" implements com.kob.backend.consumer.utils.BotCodeInterface");
+        int k = code.indexOf(" implements com.kob.backend.consumer.utils.bottool.BotCodeInterface");
         return code.substring(0, k) + uid + code.substring(k);
     }
 
@@ -32,7 +33,7 @@ public class BotConsumer extends Thread{
         String uid = uuid.toString().substring(0, 8);  //substring就是取出字符串的0至7位字符(左闭右开)
 
         BotCodeInterface botCodeInterface = Reflect.compile(  //Reflect是joor包里的,可以动态的执行一段java代码
-            "com.kob.backend.consumer.utils.BotCode" + uid,
+            "com.kob.backend.consumer.utils.bottool.BotCode" + uid,
              addUid(bot.getBotCode(), uid)
         ).create().get();
 

@@ -1,7 +1,7 @@
 package com.kob.backend;
 
-import com.kob.backend.consumer.utils.BotTool;
-import com.kob.backend.consumer.utils.MatchTool;
+import com.kob.backend.consumer.utils.bottool.BotTool;
+import com.kob.backend.consumer.utils.matchtool.MatchTool;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
