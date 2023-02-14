@@ -3,6 +3,7 @@ import PKIndexView from '../views/pk/PKIndexView.vue'
 import RecordIndexView from '../views/record/RecordIndexView.vue'
 import RecordContentView from '../views/record/RecordContentView.vue'
 import RanklistIndexView from '../views/ranklist/RanklistIndexView.vue'
+import ForumIndexView from '../views/forum/ForumIndexView.vue'
 import UserBotIndexView from '../views/user/bot/UserBotIndexView.vue'
 import NotFoundIndexView from '../views/error/NotFound.vue'
 import UserAccountLoginView from '@/views/user/account/UserAccountLoginView'
@@ -27,14 +28,6 @@ const routes = [
     }
   },
   {
-    path: "/ranklist/",
-    name: "ranklist_index",
-    component: RanklistIndexView,
-    meta: {
-      requestAuth: true,
-    }
-  },
-  {
     path: "/record/",
     name: "record_index",
     component: RecordIndexView,
@@ -46,6 +39,22 @@ const routes = [
     path: "/record/:recordId/",  //加:就可以在路径里传参数
     name: "record_content",
     component: RecordContentView,
+    meta: {
+      requestAuth: true,
+    }
+  },
+  {
+    path: "/ranklist/",
+    name: "ranklist_index",
+    component: RanklistIndexView,
+    meta: {
+      requestAuth: true,
+    }
+  },
+  {
+    path: "/forum/",  
+    name: "forum_index",
+    component: ForumIndexView,
     meta: {
       requestAuth: true,
     }

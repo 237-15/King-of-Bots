@@ -3,6 +3,7 @@ import { createStore } from 'vuex'
 import ModuleUser from './User'
 import ModulePk from './pk'
 import ModuleRecord from './record'
+import ModulePost from './post'
 
 export default createStore({
   state: {  //全局参数
@@ -17,5 +18,6 @@ export default createStore({
     user: ModuleUser,
     pk: ModulePk,
     record: ModuleRecord,
+    post: ModulePost,
   }
 })

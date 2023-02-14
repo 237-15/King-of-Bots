@@ -21,7 +21,7 @@
                 </div>
                 <div style="margin-bottom: 0px; padding-left: 8vh; color:bisque; padding-top: 15vh;">出战！！</div>
                 <div class="select-user-bot">
-                    <select v-model="bot_id" :disabled="showSelect" class="form-select" aria-label="Default select example">
+                    <select v-model="bot_id" :disabled="showSelect" style="cursor: pointer;" class="form-select" aria-label="Default select example">
                         <option value="-1" selected>亲自出马</option>
                         <option :value="bot.id" v-for="bot in bots" :key="bot.id">{{ bot.title }}</option>
                     </select>
@@ -118,6 +118,12 @@ export default {
                 min.value = 0;  //重置
                 second.value = 0;
             }
+            if(min.value >= 60) {  //匹配超过一个小时将自动断开匹配
+                click_btn();
+                window.clearInterval(time_id);  //停止计时
+                min.value = 0;  //重置
+                second.value = 0;
+            }
         }
 
         return {
@@ -164,7 +170,7 @@ div.user-photo > img {
 
 div.username_photo_background {
     background-color: rgb(51, 204, 153);
-    box-shadow: 4px 4px 5px #1e7a5b;
+    box-shadow: 0px 0px 10px #134d3a;
     border-radius: 5vh;
     width: 15vw;
     height: 20vw;
@@ -175,6 +181,9 @@ button {
     text-align: center;
     margin-top: 8vh;
     width: 7vw;
+    box-shadow: 0px 0px 10px #ecf44b;
+    color: white;
+    font-weight: 600;
 }
 
 div.time {

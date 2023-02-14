@@ -67,7 +67,10 @@
 
                     </div>
                     <div class="card-body">
-                        <table class="table table-striped table-hover">
+                        <div v-if="bots_is_empty == false">
+                            <span style="margin-left: 21vw; font-size: large; font-weight: 600;">快来创建你的第一个bot吧！！</span> 
+                        </div>
+                        <table class="table table-striped table-hover" v-if="bots_is_empty == true">
                             <thead>
                                 <tr>
                                     <th>名称</th>
@@ -170,6 +173,7 @@ export default {
 
         const store = new useStore();
         let bots = ref([]);  //定义了一个数组，存放所有的bot,用于展示
+        let bots_is_empty = ref(false);  //判断bots是否为空
 
         const botadd = reactive({  //用户创建的bot信息
             title: "",
@@ -187,6 +191,8 @@ export default {
                 },
                 success(resp) {
                     bots.value = resp;
+                    if(bots.value == "") bots_is_empty.value = false;
+                    else bots_is_empty.value = true;
                 }
             })
         }
@@ -274,6 +280,7 @@ export default {
 
         return {
             bots,
+            bots_is_empty,
             botadd,
             add_bot,
             update_bot,

@@ -21,11 +21,11 @@ export default {
     setup() {
         const store = useStore()
         const socketUrl = `ws://127.0.0.1:3000/websocket/${store.state.user.token}/`
-        let socket = null
+localStorage.setItem("current_webPage_name", "home");        let socket = null
 
         store.commit("updateLoser", "none");
         store.commit("updateIsRecord", false)
-        localStorage.setItem("current_webPage_name", "home");
+        
 
         onMounted(() => {  //挂载的意思，就是当打开pk页面是执行此函数
             store.commit("updateOpponent", {

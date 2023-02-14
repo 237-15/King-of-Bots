@@ -267,8 +267,10 @@ public class Game extends Thread{  //继承Thread类，就可以变成多线程�
             if(botB != null)
                 botB.setLoseCount(botB.getLoseCount() + 1);
         }
-        WebSocketServer.botMapper.updateById(botA);
-        WebSocketServer.botMapper.updateById(botB);
+        if(botA != null)
+            WebSocketServer.botMapper.updateById(botA);
+        if(botB != null)
+            WebSocketServer.botMapper.updateById(botB);
     }
 
     private void SendResult() {  //向两名玩家公布游戏结果

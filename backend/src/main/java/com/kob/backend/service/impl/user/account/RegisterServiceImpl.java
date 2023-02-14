@@ -70,7 +70,7 @@ public class RegisterServiceImpl implements RegisterService {
         }
 
         String encodePassword = passwordEncoder.encode((password));
-        String photo = "chrome-search://local-ntp/edge_background.jpg?ts=1663067779";
+        String photo = "https://tse3-mm.cn.bing.net/th/id/OIP-C.ui7Bz54Y7o_H53p6ZO3ViAHaHa?w=181&h=181&c=7&r=0&o=5&dpr=1.4&pid=1.7";
         User user = new User(null, username, encodePassword, photo, 1500);
         userMapper.insert(user);
 

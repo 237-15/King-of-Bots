@@ -38,19 +38,21 @@ public class JwtUtil {
         long expMillis = nowMillis + ttlMillis;
         Date expDate = new Date(expMillis);
         return Jwts.builder()
-                .setId(uuid)
-                .setSubject(subject)
-                .setIssuer("sg")
-                .setIssuedAt(now)
-                .signWith(signatureAlgorithm, secretKey)
+                .setId(uuid)              //唯一的ID
+                .setSubject(subject)   // 主题  可以是JSON数据
+                .setIssuer("sg")     // 签发者
+                .setIssuedAt(now)      // 签发时间
+                .signWith(signatureAlgorithm, secretKey) //使用HS256对称加密算法签名, 第二个参数为秘钥
                 .setExpiration(expDate);
     }
 
+    //生成加密后的秘钥 secretKey
     public static SecretKey generalKey() {
         byte[] encodeKey = Base64.getDecoder().decode(JwtUtil.JWT_KEY);
         return new SecretKeySpec(encodeKey, 0, encodeKey.length, "HmacSHA256");
     }
 
+    //解析
     public static Claims parseJWT(String jwt) throws Exception {
         SecretKey secretKey = generalKey();
         return Jwts.parserBuilder()

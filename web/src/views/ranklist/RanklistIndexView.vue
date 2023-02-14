@@ -38,13 +38,9 @@
         </table>
         <nav aria-label="...">
             <ul class="pagination" style="float: right;">
-                <li class="page-item" >
-                    <a class="page-link" @click="click_page(-5)" href="#"><span style="font-size: small;">第一页</span></a>
-                </li>
-
                 <li class="page-item">
                     <a class="page-link" href="#" aria-label="Previous">
-                        <span @click="click_page(-1)" aria-hidden="true">&laquo;</span>
+                        <span @click="click_page(-1)" aria-hidden="true" style="font-size: smaller;">第一页</span>
                     </a>
                 </li>
 
@@ -62,12 +58,8 @@
 
                 <li class="page-item">
                     <a class="page-link" href="#" aria-label="Next">
-                        <span @click="click_page(-4)" aria-hidden="true">&raquo;</span>
+                        <span @click="click_page(-4)" aria-hidden="true" style="font-size: smaller;">最后一页</span>
                     </a>
-                </li>
-
-                <li class="page-item" >
-                    <a class="page-link" @click="click_page(-6)" href="#"><span style="font-size: small;">最后一页</span></a>
                 </li>
             </ul>
         </nav>
@@ -97,18 +89,10 @@ export default {
 
         const click_page = page => {
             let max_page = parseInt(Math.ceil((user_count / 8)))  //向上取整
-            if(page === -1) {
-                current_page -= 5
-                if(current_page < 1) current_page = 1
-            }
+            if(page === -1) current_page = 1
             else if(page === -2) current_page -= 1
             else if(page === -3) current_page += 1
-            else if(page === -4) {
-                current_page += 5
-                if(current_page > max_page) current_page = max_page
-            }
-            else if(page === -5) current_page = 1
-            else if(page === -6) current_page = max_page
+            else if(page === -4) current_page = max_page
             else current_page = page
 
             if(current_page >= 1 && current_page <= max_page) {
@@ -151,15 +135,12 @@ export default {
                             user: resp.users[i],
                             ranking: parseInt(i) + 1
                         })
-                        console.log(users.value)
                     }
                     user_count = resp.user_count;
                     for(const user of users.value) {
                         if(user.user.id == store.state.user.id) {
                             my.value = user.user
                             my_ranking.value = user.ranking
-                            console.log(my.value)
-                            console.log(my_ranking)
                             break
                         }
                     }

@@ -87,7 +87,7 @@ export default {
         localStorage.setItem("current_webPage_name", "record_index")
 
         const store = useStore()
-        let current_page = 1  //当前页数
+        let current_page = store.state.record.current_page  //默认当前页数为第一页
         let records = ref([]);  //当前页对局的详细信息
         let record_count = 0;  //对局总场数
         let pages = ref([]);  //可展示的页数数组   如可展示出4、5、6、7、8页，高亮在第6页
@@ -95,18 +95,19 @@ export default {
         const click_page = page => {
             let max_page = parseInt(Math.ceil((record_count / 8)))  //向上取整
             if(page === -1) {
-                current_page -= 5
+                current_page -= 10
                 if(current_page < 1) current_page = 1
             }
             else if(page === -2) current_page -= 1
             else if(page === -3) current_page += 1
             else if(page === -4) {
-                current_page += 5
+                current_page += 10
                 if(current_page > max_page) current_page = max_page
             }
             else if(page === -5) current_page = 1
             else if(page === -6) current_page = max_page
             else current_page = page
+            store.commit("updateCurrent_page", current_page)
 
             if(current_page >= 1 && current_page <= max_page) {
                 pull_page(current_page)
@@ -129,8 +130,6 @@ export default {
         }
 
         const pull_page = page => {
-            page = current_page
-
             $.ajax({
                 url: "http://127.0.0.1:3000/record/getlist/",
                 type: "get",
@@ -202,6 +201,7 @@ export default {
             //         right = mid - 1
             //     }
             // }
+            store.commit("updateCurrent_page", current_page)
 
             for (const record of records.value) {
                 if (record.record.id === recordId) {
