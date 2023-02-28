@@ -85,7 +85,7 @@ export default {
         let user_count = 0;  //玩家总数
         let pages = ref([]);  //可展示的页数数组   如可展示出4、5、6、7、8页，高亮在第6页
         let my = ref();  //玩家自己的信息
-        let my_ranking = ref(-1);  //玩家的排名
+        let my_ranking = ref(1);  //玩家的排名
 
         const click_page = page => {
             let max_page = parseInt(Math.ceil((user_count / 8)))  //向上取整

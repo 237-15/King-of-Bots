@@ -66,7 +66,7 @@ export default {
                 showSelect.value = true;  //禁用选择框
 
                 store.commit("updateTime", "start")
-                time_id = setInterval(timer,50)  //每1000毫秒执行一下timer函数
+                time_id = setInterval(timer,50)  //每50毫秒执行一下timer函数
 
                 store.state.pk.socket.send(JSON.stringify({  //stringify() 可以将JSON封装成字符串 || send() 向后端发送信息
                     event: "start-matching",
