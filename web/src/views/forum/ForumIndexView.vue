@@ -128,18 +128,21 @@
                                     <div class="container">
                                         <div class="row">
                                             <h1>2评论</h1>
+                                            <div>
+                                                你好呀
+                                            </div>
                                             <div class="col-1">
-                                                <img class="photo" src="https://tse3-mm.cn.bing.net/th/id/OIP-C.ui7Bz54Y7o_H53p6ZO3ViAHaHa?w=181&h=181&c=7&r=0&o=5&dpr=1.4&pid=1.7" />
+                                                <img class="photo" :src="$store.state.user.photo" />
                                             </div>
                                             <div class="col-11">
-                                                <!-- <textarea style="margin-left: 10px;" cols="75"></textarea> -->
+                                                <!-- <textarea v-model="new_comment" style="margin-left: 10px;" cols="75"></textarea> -->
                                                 <v-md-editor 
                                                     v-model="new_comment" 
                                                     height="200px"
                                                     :disabled-menus="[]"
                                                 />
                                             </div>
-                                            <button style="width: 15vh; margin: 20px auto;" class="btn btn-primary" type="button">提交评论</button>
+                                            <button @click="add_comment(post.post.id)" style="width: 15vh; margin: 20px auto;" class="btn btn-primary" type="button">提交评论</button>
                                         </div>
                                     </div>
                                 </div>
@@ -168,7 +171,8 @@ export default {
         const store = useStore();
         let posts = ref([]);
         let new_post = ref();
-        let new_comment = ref()
+        let new_comment = ref("");
+        let show_post_count = 10;  //当前展示post的个数,第一次打开论坛加载10条帖子
         let carousel_photos = reactive([
             "https://tse3-mm.cn.bing.net/th/id/OIP-C.jb-OE259cWU7Y_29TRf7bAHaEK?pid=ImgDet&rs=1",
             "https://tse1-mm.cn.bing.net/th/id/OIP-C.o9L3gfJLCNdwFODmZrgcOAHaEK?pid=ImgDet&rs=1",
@@ -180,7 +184,8 @@ export default {
                 url: "http://127.0.0.1:3000/post/getlist/",
                 type: "get",
                 data: {
-                    user_id: store.state.user.id
+                    user_id: store.state.user.id,
+                    show_post_count
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token
@@ -207,7 +212,6 @@ export default {
                     Authorization: "Bearer " + store.state.user.token
                 },
                 success() {
-                    console.log(new_post.value)
                     get_list()
                     Modal.getInstance("#addpost").hide()
                     new_post.value = ""
@@ -281,6 +285,27 @@ export default {
             })
         }
 
+        const add_comment = (post_id) => {
+            $.ajax({
+                url: "http://127.0.0.1:3000/post/comment/add/",
+                type: "post",
+                data: {
+                    user_id: store.state.user.id,
+                    post_id: post_id,
+                    comment: new_comment.value
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token
+                },
+                success() {
+                    
+                },
+                error() {
+                    console.log("error_message: comment_add")
+                }
+            })
+        }
+
         return {
             posts,
             new_post,
@@ -289,6 +314,7 @@ export default {
             add_post,
             like_post,
             star_post,
+            add_comment,
         }
     }
 }

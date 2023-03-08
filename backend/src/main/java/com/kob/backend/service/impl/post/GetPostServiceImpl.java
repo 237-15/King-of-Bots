@@ -30,23 +30,25 @@ public class GetPostServiceImpl implements GetPostService {
     @Autowired
     private StarMapper starMapper;
     @Override
-    public List<JSONObject> getPosts(Integer userId) {
+    public List<JSONObject> getPosts(Integer userId, Integer showPostCount) {
         QueryWrapper<Post> queryWrapper = new QueryWrapper<>();
         queryWrapper.orderByDesc("create_time");
         List<Post> posts = postMapper.selectList(queryWrapper);  //每条帖子的详细内容
 
         QueryWrapper<Love> queryWrapper1 = new QueryWrapper<>();
         queryWrapper1.eq("user_id", userId);
-        List<Love> loves = loveMapper.selectList(queryWrapper1);
+        List<Love> loves = loveMapper.selectList(queryWrapper1);  //所有的点赞列表
 
         QueryWrapper<Star> queryWrapper2 = new QueryWrapper<>();
         queryWrapper2.eq("user_id", userId);
-        List<Star> stars = starMapper.selectList(queryWrapper2);
+        List<Star> stars = starMapper.selectList(queryWrapper2);  //所有的收藏列表
 
         Date now = new Date();
         List<JSONObject> resp = new ArrayList<>();  //每条帖子用一个json封装(包括用户的用户名和头像)
         for(Post post : posts) {
             User user = userMapper.selectById(post.getUserId());
+            post.setReadCount(post.getReadCount() + 1);
+            postMapper.updateById(post);
 
             boolean isLove = false;
             for(Love love : loves) {

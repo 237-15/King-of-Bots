@@ -5,5 +5,5 @@ import com.alibaba.fastjson2.JSONObject;
 import java.util.List;
 
 public interface GetPostService {
-    List<JSONObject> getPosts(Integer userId);
+    List<JSONObject> getPosts(Integer userId, Integer showPostCount);
 }

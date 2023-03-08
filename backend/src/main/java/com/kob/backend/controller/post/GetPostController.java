@@ -18,6 +18,7 @@ public class GetPostController {
     @GetMapping("/post/getlist/")
     public List<JSONObject> getPosts(@RequestParam Map<String, String> data) {
         Integer userId = Integer.parseInt(data.get("user_id"));
-        return getPostService.getPosts(userId);
+        Integer showPostCount = Integer.parseInt(data.get("show_post_count"));
+        return getPostService.getPosts(userId, showPostCount);
     }
 }
