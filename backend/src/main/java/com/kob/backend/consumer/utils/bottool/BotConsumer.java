@@ -33,8 +33,8 @@ public class BotConsumer extends Thread{
         String uid = uuid.toString().substring(0, 8);  //substring就是取出字符串的0至7位字符(左闭右开)
 
         BotCodeInterface botCodeInterface = Reflect.compile(  //Reflect是joor包里的,可以动态的执行一段java代码
-            "com.kob.backend.consumer.utils.bottool.BotCode" + uid,
-             addUid(bot.getBotCode(), uid)
+            "com.kob.backend.consumer.utils.bottool.BotCode" + uid,  //路径名
+             addUid(bot.getBotCode(), uid)  //代码
         ).create().get();
 
         Integer direction = botCodeInterface.nextMove(bot.getMapInfo());

@@ -22,7 +22,7 @@
             <div class="col-9">
                 <div class="card" style="margin-top: 20px;">
                     <div class="card-header">
-                        <span style="font-size: 120%;">我的bot</span>
+                        <span style="font-size: 120%;">我的伙伴</span>
                         <button type="button" class="btn btn-primary float-end" data-bs-toggle="modal" data-bs-target="#add-bot-btn">创建</button>
                         
                         <!-- Modal-add -->
@@ -36,12 +36,12 @@
                                 <div class="modal-body">
                                     <!-- 表单 -->
                                     <div class="mb-3">
-                                        <label for="add-bot-title" class="form-label">标题</label>
-                                        <input v-model="botadd.title" type="email" class="form-control" id="add-bot-title" placeholder="请输入bot的标题">
+                                        <label for="add-bot-title" class="form-label">名称</label>
+                                        <input v-model="botadd.title" type="email" class="form-control" id="add-bot-title" placeholder="请输入伙伴的名称">
                                     </div>
                                     <div class="mb-3">
                                         <label for="add-bot-description" class="form-label">简介</label>
-                                        <textarea v-model="botadd.description" class="form-control" id="add-bot-description" rows="3" placeholder="请输入bot的简介"></textarea>
+                                        <textarea v-model="botadd.description" class="form-control" id="add-bot-description" rows="3" placeholder="请输入伙伴的简介"></textarea>
                                     </div>
                                     <div class="mb-3">
                                         <label for="add-bot-code" class="form-label">代码</label>
@@ -68,7 +68,7 @@
                     </div>
                     <div class="card-body">
                         <div v-if="bots_is_empty == false">
-                            <span style="margin-left: 21vw; font-size: large; font-weight: 600;">快来创建你的第一个bot吧！！</span> 
+                            <span style="margin-left: 21vw; font-size: large; font-weight: 600;">快来创建你的第一个伙伴吧！！</span> 
                         </div>
                         <table class="table table-striped table-hover" v-if="bots_is_empty == true">
                             <thead>
@@ -99,7 +99,7 @@
                                             <div class="modal-body">
                                                 <!-- 表单 -->
                                                 <div class="mb-3">
-                                                    <label for="add-bot-title" class="form-label">标题</label>
+                                                    <label for="add-bot-title" class="form-label">名称</label>
                                                     <input v-model="bot.title" type="email" class="form-control" id="add-bot-title">
                                                 </div>
                                                 <div class="mb-3">
@@ -184,7 +184,7 @@ export default {
 
         const refresh_bots = () => {  //更新bot信息函数
             $.ajax({
-                url: "http://127.0.0.1:3000/user/bot/getlist/",
+                url: "http://127.0.0.1:3000/api/user/bot/getlist/",
                 type: "get",
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,
@@ -202,7 +202,7 @@ export default {
         const add_bot = () => {
             botadd.error_message = "";  //将输入不合法的报错信息置空
             $.ajax({
-                url: "http://127.0.0.1:3000/user/bot/add/",
+                url: "http://127.0.0.1:3000/api/user/bot/add/",
                 type: "post",
                 data: {
                     title: botadd.title,
@@ -233,7 +233,7 @@ export default {
         const update_bot = (bot) => {
             bot.error_message = "";  //将输入不合法的报错信息置空
             $.ajax({
-                url: "http://127.0.0.1:3000/user/bot/update/",
+                url: "http://127.0.0.1:3000/api/user/bot/update/",
                 type: "post",
                 data: {
                     bot_id: bot.id,
@@ -261,7 +261,7 @@ export default {
 
         const remove_bot = (bot) => {
             $.ajax({
-                url: "http://127.0.0.1:3000/user/bot/remove/",
+                url: "http://127.0.0.1:3000/api/user/bot/remove/",
                 type: "post",
                 data: {
                     bot_id: bot.id,

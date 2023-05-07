@@ -14,7 +14,6 @@ public class BackendApplication {
 		BotTool botTool = new BotTool();
 		botTool.start();
 	}
-
 }
 
 

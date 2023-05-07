@@ -1,11 +1,11 @@
 <template>
     <ContentField>
-        <div class="title">对局列表</div>
+        <div class="title">对战回放</div>
         <table class="table table-striped table-hover">
             <thead>
                 <tr>
-                    <th style="padding-left: 9vh;">A</th>
-                    <th style="padding-left: 9vh;">B</th>
+                    <th style="padding-left: 7vh;">玩家A</th>
+                    <th style="padding-left: 7vh;">玩家B</th>
                     <th style="text-align: center;">对战结果</th>
                     <th style="text-align: center;">对战时间</th>
                     <th style="text-align: center;">操作</th>
@@ -131,7 +131,7 @@ export default {
 
         const pull_page = page => {
             $.ajax({
-                url: "http://127.0.0.1:3000/record/getlist/",
+                url: "http://127.0.0.1:3000/api/record/getlist/",
                 type: "get",
                 data: {
                     page,

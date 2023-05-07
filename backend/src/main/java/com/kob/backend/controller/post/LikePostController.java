@@ -13,7 +13,7 @@ public class LikePostController {
     @Autowired
     private LovePostService lovePostService;
 
-    @PostMapping("/post/likepost/")
+    @PostMapping("/api/post/likepost/")
     public void likePost(@RequestParam Map<String, String> data) {
         Integer userId = Integer.parseInt(data.get("user_id"));  //用户id
         Integer postId = Integer.parseInt(data.get("post_id"));  //用户点赞的帖子id

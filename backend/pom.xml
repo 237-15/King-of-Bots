@@ -15,11 +15,14 @@
 		<spring-boot.version>2.3.7.RELEASE</spring-boot.version>
 	</properties>
 
+	<!--	项目打包成 .jar-->
+	<packaging>jar</packaging>
+
 	<dependencies>
 		<!--oj评测机-->
 		<dependency>
 			<groupId>org.jooq</groupId>
-			<artifactId>joor</artifactId>
+			<artifactId>joor-java-8</artifactId>
 			<version>0.9.14</version>
 		</dependency>
 
@@ -132,6 +135,21 @@
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<!--这里写上main方法所在类的路径-->
+				<configuration>
+					<mainClass>com.kob.backend.BackendApplication</mainClass>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>

@@ -13,7 +13,7 @@ public class StarPostController {
     @Autowired
     private StarPostService starPostService;
 
-    @PostMapping("/post/starpost/")
+    @PostMapping("/api/post/starpost/")
     public void starPost(@RequestParam Map<String, String> data) {
         Integer userId = Integer.parseInt(data.get("user_id"));
         Integer postId = Integer.parseInt(data.get("post_id"));

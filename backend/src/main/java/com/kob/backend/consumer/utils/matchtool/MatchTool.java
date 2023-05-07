@@ -53,7 +53,7 @@ public class MatchTool extends Thread{
     }
 
     private void matchPlayer() {  //尝试匹配所有人
-        System.out.println("match players: " + matchTool.toString());
+//        System.out.println("match players: " + matchTool.toString());
         boolean[] used = new boolean[matchTool.size()];  //表示该玩家有没有匹配成功
         for(int i = 0; i < matchTool.size(); i++){
             if(used[i]) continue;  //如果已经匹配成功就看看下一个玩家

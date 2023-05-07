@@ -1,8 +1,6 @@
 package com.kob.backend.consumer.utils.bottool;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class BotCode implements com.kob.backend.consumer.utils.bottool.BotCodeInterface {
     static class Cell {
@@ -26,6 +24,7 @@ public class BotCode implements com.kob.backend.consumer.utils.bottool.BotCodeIn
         int x = sx, y = sy;
         int step = 0;
         res.add(new Cell(x, y));
+
         for (int i = 0; i < steps.length(); i ++ ) {
             int d = steps.charAt(i) - '0';
             x += dx[d];
@@ -35,6 +34,7 @@ public class BotCode implements com.kob.backend.consumer.utils.bottool.BotCodeIn
                 res.remove(0);
             }
         }
+
         return res;
     }
 
@@ -42,6 +42,7 @@ public class BotCode implements com.kob.backend.consumer.utils.bottool.BotCodeIn
     public Integer nextMove(String input) {
         String[] strs = input.split("#");
         int[][] g = new int[13][14];
+
         for (int i = 0, k = 0; i < 13; i ++ ) {
             for (int j = 0; j < 14; j ++, k ++ ) {
                 if (strs[0].charAt(k) == '1') {

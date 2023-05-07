@@ -81,8 +81,8 @@ public class UpdateServiceImpl implements UpdateService {
                 title,
                 description,
                 content,
-                0,
-                0,
+                bot.getWinCount(),
+                bot.getLoseCount(),
                 bot.getCreateTime(),
                 new Date()
         );

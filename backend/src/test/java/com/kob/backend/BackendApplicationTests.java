@@ -1,9 +1,12 @@
 package com.kob.backend;
 
+import java.util.Scanner;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 
 @SpringBootTest
 class BackendApplicationTests {
@@ -17,3 +20,5 @@ class BackendApplicationTests {
 		System.out.println(passwordEncoder.encode("123456"));
 	}
 }
+
+

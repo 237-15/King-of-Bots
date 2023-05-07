@@ -22,7 +22,7 @@
                 <div style="margin-bottom: 0px; padding-left: 8vh; color:bisque; padding-top: 15vh;">出战！！</div>
                 <div class="select-user-bot">
                     <select v-model="bot_id" :disabled="showSelect" style="cursor: pointer;" class="form-select" aria-label="Default select example">
-                        <option value="-1" selected>亲自出马</option>
+                        <option value="-1" selected>亲自上阵</option>
                         <option :value="bot.id" v-for="bot in bots" :key="bot.id">{{ bot.title }}</option>
                     </select>
                 </div>
@@ -90,7 +90,7 @@ export default {
 
         const refresh_bots = () => {  //更新bot信息函数
             $.ajax({
-                url: "http://127.0.0.1:3000/user/bot/getlist/",
+                url: "http://127.0.0.1:3000/api/user/bot/getlist/",
                 type: "get",
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,

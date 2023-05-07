@@ -15,7 +15,7 @@ public class GetPostController {
     @Autowired
     private GetPostService getPostService;
 
-    @GetMapping("/post/getlist/")
+    @GetMapping("/api/post/getposts/")
     public List<JSONObject> getPosts(@RequestParam Map<String, String> data) {
         Integer userId = Integer.parseInt(data.get("user_id"));
         Integer showPostCount = Integer.parseInt(data.get("show_post_count"));

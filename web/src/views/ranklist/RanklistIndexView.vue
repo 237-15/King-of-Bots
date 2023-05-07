@@ -1,6 +1,6 @@
 <template>
     <ContentField>
-        <div class="title">排行榜</div>
+        <div class="title">天梯榜</div>
         <table class="table table-striped table-hover">
             <thead>
                 <tr>
@@ -121,7 +121,7 @@ export default {
             my.value = []
 
             $.ajax({
-                url: "http://127.0.0.1:3000/ranklist/getlist/",
+                url: "http://127.0.0.1:3000/api/ranklist/getlist/",
                 type: "get",
                 data: {
                     page,

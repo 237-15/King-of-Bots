@@ -42,7 +42,7 @@ export default {
     actions: {  //辅助函数  store.dispatch()
         login(context, data) {  //如果传过来2个以上的参数就写data,这是框架定义好的
             $.ajax({
-                url: "http://127.0.0.1:3000/user/account/login/",
+                url: "http://127.0.0.1:3000/api/user/account/login/",
                 type: "post",
                 data: {
                     username: data.username,
@@ -64,7 +64,7 @@ export default {
         },
         getinfo(context, data) {
             $.ajax({
-                url: "http://127.0.0.1:3000/user/account/info/",
+                url: "http://127.0.0.1:3000/api/user/account/info/",
                 type: "get",
                 headers: {
                     Authorization: "Bearer " + context.state.token,

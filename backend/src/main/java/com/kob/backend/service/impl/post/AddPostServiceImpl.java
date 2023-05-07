@@ -16,7 +16,7 @@ public class AddPostServiceImpl implements AddPostService {
     @Override
     public void addPost(Integer userId, String content) {
         Date now = new Date();
-        Post post = new Post(null, userId, content, now, 0, 0, 0);
+        Post post = new Post(null, userId, content, now, 0, 0, 0, 0);
         postMapper.insert(post);
     }
 }

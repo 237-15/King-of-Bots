@@ -11,7 +11,7 @@ public class ranklist {
     @Autowired
     private GetRankListService getRankListService;
 
-    @GetMapping("/ranklist/getlist/")
+    @GetMapping("/api/ranklist/getlist/")
     public JSONObject getRankList(Integer page, Integer userId) {
         return getRankListService.getRankList(page);
     }

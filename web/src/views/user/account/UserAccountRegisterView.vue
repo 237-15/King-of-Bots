@@ -40,7 +40,7 @@ export default {
 
         const register = () => {
             $.ajax({
-                url: "http://127.0.0.1:3000/user/account/register/",
+                url: "http://127.0.0.1:3000/api/user/account/register/",
                 type: "post",  //get: 只获得数据，不修改数据库； post:可修改数据库
                 data: {        //post比get更安全
                     username: username.value,

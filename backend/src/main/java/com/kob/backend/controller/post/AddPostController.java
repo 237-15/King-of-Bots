@@ -13,7 +13,7 @@ public class AddPostController {
     @Autowired
     private AddPostService addPostService;
 
-    @PostMapping("/post/addpost/")
+    @PostMapping("/api/post/addpost/")
     public void addPost(@RequestParam Map<String, String> data) {
         Integer userId = Integer.parseInt(data.get("user_id"));
         String content = data.get("content");

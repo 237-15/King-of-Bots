@@ -20,4 +20,5 @@ public class Post {
     private Integer readCount;
     private Integer loveCount;
     private Integer starCount;
+    private Integer commentCount;
 }
